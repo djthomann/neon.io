@@ -7,6 +7,8 @@ import LobbyComponent from '../components/LobbyComponent.vue'
 
 <template>
   <h1>This is the lobby view</h1>
+
+  <RouterLink to="/game">Start Game</RouterLink>
 </template>
 
 
