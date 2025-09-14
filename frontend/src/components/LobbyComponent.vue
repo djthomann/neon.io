@@ -1,10 +1,9 @@
 <template>
   <section>
-    <div id="content">
+    <div id="content" @click="joinLobby">
       <h2>Lobby {{ lobby.id }}</h2>
       <div id="bottom">
         <h3>0/{{ lobby.capacity }} players</h3>
-        <RouterLink :to="{ name: 'lobby', params: { id: lobby.id } }">Join Lobby</RouterLink>
       </div>
     </div>
     <div id="ghost"></div>
@@ -15,8 +14,15 @@
 import { defineComponent } from 'vue'
 import { RouterLink } from 'vue-router'
 import type { Lobby } from '../assets/types/lobby'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const props = defineProps<{ lobby: Lobby }>()
+
+function joinLobby() {
+  router.push({ name: 'lobby', params: { id: props.lobby.id } })
+}
 </script>
 
 <style scoped>

@@ -44,7 +44,17 @@ async function joinLobby() {
 <style scoped>
 
 #title {
-  font-size: 64pt;
+  font-size: 72pt;
+  color: white;
+  text-shadow:
+    0 0 7px rgb(0, 189, 0),
+    0 0 10px rgb(0, 189, 0),
+    0 0 21px rgb(0, 189, 0),
+    0 0 42px #0fa,
+    0 0 82px #0fa,
+    0 0 92px #0fa,
+    0 0 102px #0fa,
+    0 0 151px #0fa;
 }
 
 #home {
