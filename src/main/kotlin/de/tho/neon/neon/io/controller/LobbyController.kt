@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@RequestMapping("/lobbies")
+@RequestMapping("/api/lobbies")
 class LobbyController {
 
     @Autowired
