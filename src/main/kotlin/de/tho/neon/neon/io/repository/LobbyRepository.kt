@@ -1,6 +1,7 @@
 package de.tho.neon.neon.io.repository
 
 import de.tho.neon.neon.io.model.Lobby
+import de.tho.neon.neon.io.model.Player
 import org.springframework.stereotype.Repository
 
 @Repository
@@ -10,12 +11,16 @@ class LobbyRepository {
 
     val lobbies = mutableMapOf<Long, Lobby>()
 
-    fun addLobby(): Lobby {
+    fun addLobby(owner: Player?): Lobby {
         val id = nextId
-        val lobby = Lobby(id, 8, emptyList())
+        val lobby = Lobby(id, owner,8, mutableListOf())
         lobbies.put(id, lobby)
         nextId++
         return lobby
+    }
+
+    fun removeLobby(id: Long): Boolean {
+        return lobbies.remove(id) != null
     }
 
     fun getLobby(id: Long): Lobby? {

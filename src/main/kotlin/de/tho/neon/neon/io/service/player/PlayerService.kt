@@ -6,6 +6,8 @@ interface PlayerService {
 
     fun getPlayers(): List<Player>
 
+    fun getPlayer(id: Long): Player?
+
     fun createPlayer(name: String): Player
 
 }

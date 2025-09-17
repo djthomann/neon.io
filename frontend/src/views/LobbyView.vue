@@ -5,11 +5,10 @@ import LobbyComponent from '../components/LobbyComponent.vue'
 import type { Lobby } from '../assets/types/lobby'
 import { useUserStore } from '@/stores/user'
 import { useLobbyStore } from '@/stores/lobbies'
+import UserComponent from '@/components/UserComponent.vue'
 
 const userStore = useUserStore()
 const lobbyStore = useLobbyStore()
-
-let lobbyList = ref<Lobby[]>([])
 
 async function getLobbies(): Promise<Lobby[]> {
   const res = await fetch('/api/lobbies', { method: 'GET' })
@@ -27,7 +26,7 @@ async function fetchLobbies() {
 }
 
 async function postCreateLobby(): Promise<Lobby> {
-  const res = await fetch('/api/lobbies/create', { method: 'POST' })
+  const res = await fetch(`/api/lobbies/create?ownerId=${userStore.id}`, { method: 'POST' })
   if (!res.ok) {
     // error.value = "Error when creating lobby"
   }
@@ -39,7 +38,6 @@ async function createLobby() {
   const lobby: Lobby = await postCreateLobby()
 
   lobbyStore.lobbyList.push(lobby)
-  console.log(lobbyList)
 }
 </script>
 
@@ -52,9 +50,7 @@ async function createLobby() {
         <button @click="fetchLobbies">Fetch lobbies</button>
         <button @click="createLobby">Create lobby</button>
       </div>
-      <div id="user-info">
-        <p>Welcome {{ userStore.username }}! Your id is: {{ userStore.id }}</p>
-      </div>
+      <UserComponent />
     </nav>
     <section id="lobbies">
       <LobbyComponent
@@ -70,14 +66,17 @@ async function createLobby() {
 #navigation {
   padding: 0 4%;
   width: 92%;
+  height: 10vh;
+
   background-color: black;
   justify-content: space-between;
   align-items: center;
 }
 
 #lobby-navigation {
-  width: 600px;
   display: flex;
+  flex-direction: row;
+  gap: 25px;
   align-items: center;
   justify-content: space-between;
 }

@@ -3,7 +3,7 @@
     <div id="content" @click="joinLobby">
       <h2>Lobby {{ lobby.id }}</h2>
       <div id="bottom">
-        <h3>0/{{ lobby.capacity }} players</h3>
+        <h3>{{ lobby.players.length }}/{{ lobby.capacity }} players</h3>
       </div>
     </div>
     <div id="ghost"></div>
@@ -11,17 +11,32 @@
 </template>
 
 <script lang="ts" setup>
-import { defineComponent } from 'vue'
-import { RouterLink } from 'vue-router'
+import { useLobbyStore } from '@/stores/lobbies'
 import type { Lobby } from '../assets/types/lobby'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
+const lobbyStore = useLobbyStore()
+const userStore = useUserStore()
 
 const props = defineProps<{ lobby: Lobby }>()
 
-function joinLobby() {
-  router.push({ name: 'lobby', params: { id: props.lobby.id } })
+async function postJoinLobby(lobbyId: number): Promise<Boolean> {
+  const res = await fetch(`/api/lobbies/${lobbyId}/join?playerId=${userStore.id}`, {
+    method: 'POST',
+  })
+  return res.ok
+}
+
+async function joinLobby() {
+  const success = await postJoinLobby(props.lobby.id)
+  if (success) {
+    lobbyStore.selectedLobby = props.lobby
+    router.push({ name: 'lobby', params: { id: props.lobby.id } })
+  } else {
+    console.log("Couldn't join")
+  }
 }
 </script>
 

@@ -34,7 +34,7 @@ async function joinLobby() {
   <div id="home">
     <h1 id="title">neon.io</h1>
       <label v-if="!userStore.username" for="username">Enter Username:</label>
-      <input v-if="!userStore.username" v-model="username" placeholder="Your username goes here" type="text" name="username"></input>
+      <input @keydown.enter="joinLobby"  v-if="!userStore.username" v-model="username" placeholder="Your username goes here" type="text" name="username"></input>
       <p v-if="userStore.username">Welcome {{ userStore.username }}</p>
     <p>{{ error }}</p>
     <button @click="joinLobby">Join Lobby</button>

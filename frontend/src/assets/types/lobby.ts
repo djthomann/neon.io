@@ -1,5 +1,7 @@
+import type { Player } from './player'
+
 export interface Lobby {
   id: number
-  name: string
+  players: Player[]
   capacity: number
 }

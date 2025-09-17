@@ -15,6 +15,10 @@ class PlayerServiceImpl: PlayerService {
         return playerRepository.getPlayers()
     }
 
+    override fun getPlayer(id: Long): Player? {
+        return playerRepository.getPlayer(id)
+    }
+
     override fun createPlayer(name: String): Player {
         return playerRepository.addPlayer(name)
     }
