@@ -1,7 +1,6 @@
 package de.tho.neon.neon.io.service.lobby
 
 import de.tho.neon.neon.io.model.Lobby
-import org.springframework.http.ResponseEntity
 
 interface LobbyService {
 

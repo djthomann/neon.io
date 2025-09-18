@@ -6,7 +6,7 @@ import UserComponent from '@/components/UserComponent.vue'
 import { useLobbyStore } from '@/stores/lobbies'
 import { useUserStore } from '@/stores/user'
 import { onMounted, ref } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import {  useRouter } from 'vue-router'
 
 const router = useRouter()
 
@@ -203,8 +203,8 @@ h2 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: 1fr;
-  grid-column-gap: 0px;
-  grid-row-gap: 0px;
+  grid-column-gap: 0;
+  grid-row-gap: 0;
 }
 
 .map-information {

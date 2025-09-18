@@ -1,7 +1,6 @@
 package de.tho.neon.neon.io.controller
 
 import de.tho.neon.neon.io.model.Lobby
-import de.tho.neon.neon.io.model.Player
 import de.tho.neon.neon.io.service.lobby.LobbyService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity

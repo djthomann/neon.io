@@ -33,7 +33,7 @@ class NeonMapRepository {
     }
 
     fun getMap(id: Long): NeonMap? {
-        return maps[id];
+        return maps[id]
     }
 
 }

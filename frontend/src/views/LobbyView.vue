@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import LobbyComponent from '../components/LobbyComponent.vue'
 import type { Lobby } from '../assets/types/lobby'
@@ -20,9 +20,7 @@ async function getLobbies(): Promise<Lobby[]> {
 }
 
 async function fetchLobbies() {
-  const lobbies = await getLobbies()
-
-  lobbyStore.lobbyList = lobbies
+  lobbyStore.lobbyList = await getLobbies()
 }
 
 async function postCreateLobby(): Promise<Lobby> {
@@ -83,9 +81,6 @@ onMounted(() => {
   gap: 25px;
   align-items: center;
   justify-content: space-between;
-}
-
-#user-info {
 }
 
 #lobbies {
