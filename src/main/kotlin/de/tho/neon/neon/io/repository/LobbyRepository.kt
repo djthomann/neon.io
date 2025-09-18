@@ -13,7 +13,7 @@ class LobbyRepository {
 
     fun addLobby(owner: Player?): Lobby {
         val id = nextId
-        val lobby = Lobby(id, owner,8, mutableListOf())
+        val lobby = Lobby(id, owner,8, mutableListOf(), null)
         lobbies.put(id, lobby)
         nextId++
         return lobby

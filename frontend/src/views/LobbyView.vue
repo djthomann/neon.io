@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import LobbyComponent from '../components/LobbyComponent.vue'
 import type { Lobby } from '../assets/types/lobby'
@@ -13,7 +13,7 @@ const lobbyStore = useLobbyStore()
 async function getLobbies(): Promise<Lobby[]> {
   const res = await fetch('/api/lobbies', { method: 'GET' })
   if (!res.ok) {
-    // error.value = "Error when creating lobby"
+    // error.value = "Error when getting lobbies"
   }
   const data = await res.json()
   return data as Lobby[]
@@ -39,6 +39,10 @@ async function createLobby() {
 
   lobbyStore.lobbyList.push(lobby)
 }
+
+onMounted(() => {
+  fetchLobbies()
+})
 </script>
 
 <template>

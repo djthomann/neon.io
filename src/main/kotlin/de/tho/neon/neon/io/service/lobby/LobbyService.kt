@@ -17,4 +17,6 @@ interface LobbyService {
 
     fun leaveLobby(playerId: Long, lobbyId: Long): Result<String>
 
+    fun setMap(lobbyId: Long, mapId: Long): Result<String>
+
 }
