@@ -45,7 +45,7 @@ onMounted(() => {
 
 <template>
   <div id="lobby">
-    <nav id="navigation">
+    <nav>
       <div id="lobby-navigation">
         <RouterLink to="/"><</RouterLink>
         <h1>This is the lobby page</h1>
@@ -65,12 +65,13 @@ onMounted(() => {
 </template>
 
 <style scoped>
-#navigation {
+nav {
   padding: 0 4%;
   width: 92%;
   height: 10vh;
 
   background-color: black;
+  display: flex;
   justify-content: space-between;
   align-items: center;
 }
@@ -99,9 +100,5 @@ onMounted(() => {
   left: 0;
   width: 100vw;
   height: 100vh;
-}
-
-nav {
-  display: flex;
 }
 </style>

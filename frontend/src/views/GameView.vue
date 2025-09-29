@@ -150,28 +150,26 @@ function onMouseMove(event: MouseEvent) {
   camera.quaternion.setFromEuler(euler)
 }
 
-onMounted(() => {
-  document.body.addEventListener('click', () => {
-    document.body.requestPointerLock()
-  })
+const onClick = () => {
+  document.body.requestPointerLock()
+}
 
-  document.addEventListener('mousemove', (event) => {
-    if (document.pointerLockElement === document.body) {
-      onMouseMove(event)
-    }
-  })
+const onMouseMoveHandler = (event: MouseEvent) => {
+  if (document.pointerLockElement === document.body) {
+    onMouseMove(event)
+  }
+}
+
+onMounted(() => {
+  document.body.addEventListener('click', onClick)
+
+  document.addEventListener('mousemove', onMouseMoveHandler)
 })
 
 onUnmounted(() => {
-  document.body.removeEventListener('click', () => {
-    document.body.requestPointerLock()
-  })
+  document.body.removeEventListener('click', onClick)
 
-  document.removeEventListener('mousemove', (event) => {
-    if (document.pointerLockElement === document.body) {
-      onMouseMove(event)
-    }
-  })
+  document.removeEventListener('mousemove', onMouseMoveHandler)
 })
 
 function animate() {

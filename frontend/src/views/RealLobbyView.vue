@@ -3,8 +3,11 @@ import type { Lobby } from '@/assets/types/lobby'
 import type { NeonMap } from '@/assets/types/map'
 import MapComponent from '@/components/MapComponent.vue'
 import UserComponent from '@/components/UserComponent.vue'
+import { getMaps } from '@/service/mapService'
 import { useLobbyStore } from '@/stores/lobbies'
+import { useMapStore } from '@/stores/maps'
 import { useUserStore } from '@/stores/user'
+import { storeToRefs } from 'pinia'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -14,7 +17,9 @@ const userStore = useUserStore()
 
 const lobbyStore = useLobbyStore()
 
-const maps = ref<NeonMap[]>()
+const mapStore = useMapStore()
+const { mapList } = storeToRefs(mapStore)
+
 const selectedMap = ref<NeonMap | null>(null)
 let currentIndex = 0
 
@@ -67,44 +72,36 @@ async function fetchLobby() {
   lobbyStore.selectedLobby = await getLobby()
 }
 
-async function getMaps(): Promise<NeonMap[]> {
-  const res = await fetch('/api/maps', { method: 'GET' })
-  if (!res.ok) {
-    // error.value = "Error when getting maps"
-  }
-  const data = await res.json()
-  return data as NeonMap[]
-}
-
 async function fetchMaps() {
-  maps.value = await getMaps()
+  mapList.value = await getMaps()
 
   if (!selectedMap.value) {
-    selectedMap.value = maps.value?.[0] ?? null
+    selectedMap.value = mapList.value?.[0] ?? null
     console.log(selectedMap)
   }
 }
 
 function nextMap() {
-  if (!maps.value || maps.value.length === 0) return
+  if (!mapList.value || mapList.value.length === 0) return
 
-  if (currentIndex < maps.value.length - 1) {
+  if (currentIndex < mapList.value.length - 1) {
     currentIndex++
   } else {
     currentIndex = 0
   }
-  selectedMap.value = maps.value[currentIndex]
+  console.log(mapList.value[currentIndex])
+  selectedMap.value = mapList.value[currentIndex]
 }
 
 function prevMap() {
-  if (!maps.value || maps.value.length === 0) return
+  if (!mapList.value || mapList.value.length === 0) return
 
   if (currentIndex > 0) {
     currentIndex--
   } else {
-    currentIndex = maps.value.length - 1
+    currentIndex = mapList.value.length - 1
   }
-  selectedMap.value = maps.value[currentIndex]
+  selectedMap.value = mapList.value[currentIndex]
 }
 
 async function putMap(): Promise<Boolean> {
@@ -156,7 +153,7 @@ onMounted(() => {
         </li>
       </div>
       <div v-if="!lobbyStore.selectedLobby?.map" class="map-information">
-        <h2>Map {{ currentIndex + 1 }} / {{ maps?.length }}</h2>
+        <h2>Map {{ currentIndex + 1 }} / {{ mapList?.length }}</h2>
         <MapComponent v-if="selectedMap" :map="selectedMap"></MapComponent>
         <div>
           <a @click="prevMap">< </a>

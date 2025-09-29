@@ -4,6 +4,7 @@ import LobbyView from '../views/LobbyView.vue'
 import RealLobbyView from '../views/RealLobbyView.vue'
 import GameView from '../views/GameView.vue'
 import MapCreatorView from '@/views/MapCreatorView.vue'
+import MapsView from '@/views/MapsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,7 +15,12 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/map-creator',
+      path: '/maps',
+      name: 'maps',
+      component: MapsView,
+    },
+    {
+      path: '/maps/new',
       name: 'map-creator',
       component: MapCreatorView,
     },

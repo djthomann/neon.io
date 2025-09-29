@@ -10,7 +10,10 @@
         ></div>
       </div>
     </div>
-    <p>width: {{ map.width }} height: {{ map.height }}</p>
+    <div class="details">
+      <div>{{ map.name }}</div>
+      <div>width: {{ map.width }} height: {{ map.height }}</div>
+    </div>
   </div>
 </template>
 
@@ -30,7 +33,7 @@ const props = defineProps<{
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
   width: fit-content;
 }
 
@@ -57,5 +60,11 @@ const props = defineProps<{
 
 .inactive {
   background-color: white;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 </style>

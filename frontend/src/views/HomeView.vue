@@ -27,8 +27,12 @@ async function joinLobby() {
   router.push('/lobbies')
 }
 
-async function openMapCreator() {
-  router.push('/map-creator')
+function openMapCreator() {
+  router.push('/maps/new')
+}
+
+function openMaps() {
+  router.push('/maps')
 }
 </script>
 
@@ -48,6 +52,7 @@ async function openMapCreator() {
     <p>{{ error }}</p>
     <div class="buttons">
       <button @click="joinLobby">Join Lobby</button>
+      <button @click="openMaps">Open Maps</button>
       <button @click="openMapCreator">Create Map</button>
     </div>
   </div>
