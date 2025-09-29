@@ -15,6 +15,10 @@ class NeonMapServiceImpl: NeonMapService {
         return neonMapRepository.addMap()
     }
 
+    override fun createMapFromString(name: String, content: String): NeonMap? {
+        return neonMapRepository.addMapFromString(name, content)
+    }
+
     override fun getMaps(): List<NeonMap> {
         return neonMapRepository.getMaps()
     }

@@ -6,6 +6,8 @@ interface NeonMapService {
 
     fun createMap(): NeonMap
 
+    fun createMapFromString(name: String, content: String): NeonMap?
+
     fun getMaps(): List<NeonMap>
     fun getMap(id: Long): NeonMap?
 

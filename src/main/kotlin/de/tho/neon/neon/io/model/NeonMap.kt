@@ -4,6 +4,8 @@ data class NeonMap(
 
     val id: Long,
 
+    val name: String,
+
     val width: Int = 10,
     val height: Int = 10,
 
@@ -11,6 +13,7 @@ data class NeonMap(
         Array(width) { false }
     }
 ) {
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
