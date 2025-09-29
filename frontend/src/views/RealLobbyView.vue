@@ -6,7 +6,7 @@ import UserComponent from '@/components/UserComponent.vue'
 import { useLobbyStore } from '@/stores/lobbies'
 import { useUserStore } from '@/stores/user'
 import { onMounted, ref } from 'vue'
-import {  useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
@@ -126,6 +126,10 @@ async function chooseMap() {
   }
 }
 
+async function startGame() {
+  router.push({ name: 'game' })
+}
+
 onMounted(() => {
   fetchLobby()
   fetchMaps()
@@ -163,6 +167,9 @@ onMounted(() => {
       <div v-if="lobbyStore.selectedLobby?.map" class="map-information">
         <h2>Chosen Map:</h2>
         <MapComponent :map="lobbyStore.selectedLobby?.map"></MapComponent>
+      </div>
+      <div>
+        <button @click="startGame">Start Game</button>
       </div>
     </section>
   </div>

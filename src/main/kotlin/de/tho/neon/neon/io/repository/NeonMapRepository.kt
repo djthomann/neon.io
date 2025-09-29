@@ -21,7 +21,7 @@ class NeonMapRepository {
 
     fun addMap(): NeonMap {
         val id = nextId
-        val map = NeonMap(nextId, 5, 5)
+        val map = NeonMap(nextId, 25, 25)
         scambleMap(map)
         maps[id] = map
         nextId++
