@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import type { Player } from '../assets/types/player'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import HomeAnimationView from './HomeAnimationView.vue'
 
 const userStore = useUserStore()
 const username = ref('')
@@ -38,27 +39,37 @@ function openMaps() {
 
 <template>
   <div id="home">
-    <h1 id="title">neon.io</h1>
-    <label v-if="!userStore.username" for="username">Enter Username:</label>
-    <input
-      @keydown.enter="joinLobby"
-      v-if="!userStore.username"
-      v-model="username"
-      placeholder="Your username goes here"
-      type="text"
-      name="username"
-    />
-    <p v-if="userStore.username">Welcome {{ userStore.username }}</p>
-    <p>{{ error }}</p>
-    <div class="buttons">
-      <button @click="joinLobby">Join Lobby</button>
-      <button @click="openMaps">Open Maps</button>
-      <button @click="openMapCreator">Create Map</button>
+    <div id="menu">
+      <h1 id="title">neon.io</h1>
+      <label v-if="!userStore.username" for="username">Enter Username:</label>
+      <input
+        @keydown.enter="joinLobby"
+        v-if="!userStore.username"
+        v-model="username"
+        placeholder="Your username goes here"
+        type="text"
+        name="username"
+      />
+      <p v-if="userStore.username">Welcome {{ userStore.username }}</p>
+      <p>{{ error }}</p>
+      <div class="buttons">
+        <button @click="joinLobby">Join Lobby</button>
+        <button @click="openMaps">Open Maps</button>
+        <button @click="openMapCreator">Create Map</button>
+      </div>
     </div>
+    <HomeAnimationView />
   </div>
 </template>
 
 <style scoped>
+#menu {
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .buttons {
   display: flex;
   flex-direction: column;
@@ -66,6 +77,7 @@ function openMaps() {
 }
 
 #title {
+  user-select: none;
   font-size: 72pt;
   color: white;
   text-shadow:
@@ -80,9 +92,11 @@ function openMaps() {
 }
 
 #home {
+  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-direction: column;
+  justify-content: space-between;
+  flex-direction: row;
+  background-color: black;
 }
 </style>
