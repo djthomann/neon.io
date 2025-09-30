@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Lobby } from '@/assets/types/lobby'
 import type { NeonMap } from '@/assets/types/map'
+import LobbyEventComponent from '@/components/communication/LobbyEventComponent.vue'
 import MapComponent from '@/components/MapComponent.vue'
 import UserComponent from '@/components/UserComponent.vue'
 import { getMaps } from '@/service/mapService'
@@ -136,6 +137,10 @@ onMounted(() => {
 <template>
   <div class="detail">
     <nav id="navigation">
+      <LobbyEventComponent
+        v-if="lobbyStore.selectedLobby"
+        :lobby-id="lobbyStore.selectedLobby.id"
+      />
       <div id="lobby-navigation">
         <a @click="leaveLobby"><</a>
         <h1 v-if="lobbyStore.selectedLobby">Welcome to Lobby {{ lobbyStore.selectedLobby.id }}</h1>

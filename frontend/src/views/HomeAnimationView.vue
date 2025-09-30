@@ -10,7 +10,7 @@ const sceneContainer = ref<HTMLDivElement | null>(null)
 let renderer: THREE.WebGLRenderer
 let animationFrameId: number
 let time: number = 0
-let isAnimationActive = false
+let isAnimationActive = true
 
 onMounted(async () => {
   if (!sceneContainer.value) return
@@ -34,7 +34,7 @@ onMounted(async () => {
   directionalLight.position.set(5, 5, 5)
   scene.add(directionalLight)
 
-  const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5)
+  const geometry = new THREE.OctahedronGeometry(1.5)
   const material = new THREE.MeshPhongMaterial({
     color: 0x00ff00,
     emissive: 0x00ff00,
