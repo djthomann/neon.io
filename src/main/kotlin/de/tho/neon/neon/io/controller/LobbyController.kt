@@ -1,9 +1,13 @@
 package de.tho.neon.neon.io.controller
 
+import de.tho.neon.neon.io.communication.game.GameStartEvent
+import de.tho.neon.neon.io.communication.lobby.LobbyDeletedEvent
 import de.tho.neon.neon.io.communication.lobby.LobbyJoinEvent
 import de.tho.neon.neon.io.communication.lobby.LobbyLeaveEvent
+import de.tho.neon.neon.io.communication.lobby.LobbyMapChosenEvent
 import de.tho.neon.neon.io.model.Lobby
 import de.tho.neon.neon.io.service.lobby.LobbyService
+import de.tho.neon.neon.io.service.neonmap.NeonMapService
 import de.tho.neon.neon.io.service.player.PlayerService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -21,6 +25,9 @@ import org.springframework.web.bind.annotation.RestController
 class LobbyController {
 
     @Autowired
+    private lateinit var neonMapService: NeonMapService
+
+    @Autowired
     private lateinit var playerService: PlayerService
 
     @Autowired
@@ -35,11 +42,24 @@ class LobbyController {
 
     @PostMapping("{id}/delete")
     fun deleteLobby(@PathVariable("id") id: Long): ResponseEntity<String> {
+
+        val lobby = lobbyService.getLobby(id)
+        if(lobby == null) {
+            return ResponseEntity.badRequest().body("Lobby not found")
+        }
+
         val result = lobbyService.deleteLobby(id)
-        return result.fold(
-            onSuccess = { ResponseEntity.ok(it) },
-            onFailure = { ResponseEntity.badRequest().body(it.message) }
-        )
+
+        if(result.isSuccess) {
+
+            val deletedEvent = LobbyDeletedEvent(id)
+            messagingTemplate.convertAndSend("/topic/lobby/${id}/delete", deletedEvent)
+
+            return ResponseEntity.ok(result.getOrNull().toString())
+        } else {
+            return ResponseEntity.badRequest().body(result.exceptionOrNull()?.message ?: "Unknown error")
+        }
+
     }
 
     @GetMapping("")
@@ -97,11 +117,33 @@ class LobbyController {
 
     @PutMapping("/{lobbyId}/map/{mapId}")
     fun putMap(@PathVariable lobbyId: Long, @PathVariable mapId: Long,): ResponseEntity<String> {
+
+        val map = neonMapService.getMap(mapId)
+        if(map == null) {
+            return ResponseEntity.badRequest().body("Map not found")
+        }
+
         val result = lobbyService.setMap(lobbyId, mapId)
-        return result.fold(
-            onSuccess = { ResponseEntity.ok(it) },
-            onFailure = { ResponseEntity.badRequest().body(it.message) }
-        )
+
+        if(result.isSuccess) {
+
+            val mapChosenEvent = LobbyMapChosenEvent(map)
+            messagingTemplate.convertAndSend("/topic/lobby/${lobbyId}/map", mapChosenEvent)
+
+            return ResponseEntity.ok(result.getOrNull().toString())
+        } else {
+            return ResponseEntity.badRequest().body(result.exceptionOrNull()?.message ?: "Unknown error")
+        }
+
+    }
+
+    @PostMapping("/{lobbyId}/start")
+    fun startGame(@PathVariable lobbyId: Long): ResponseEntity<String> {
+
+        val gameStartEvent = GameStartEvent(1)
+        messagingTemplate.convertAndSend("/topic/lobby/${lobbyId}/start", gameStartEvent)
+
+        return ResponseEntity.ok("Game Started!")
     }
 
 }

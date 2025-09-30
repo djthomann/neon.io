@@ -5,5 +5,5 @@ export interface Lobby {
   id: number
   players: Player[]
   capacity: number
-  map: NeonMap
+  map: NeonMap | null
 }

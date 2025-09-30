@@ -117,15 +117,17 @@ async function putMap(): Promise<Boolean> {
 
 async function chooseMap() {
   const success = await putMap()
+}
 
-  if (success) {
-    // Update lobby manually --> TODO: change later
-    fetchLobby()
-  }
+async function putLobbyStart(lobbyId: number): Promise<Boolean> {
+  const res = await fetch(`/api/lobbies/${lobbyId}/start`, {
+    method: 'POST',
+  })
+  return res.ok
 }
 
 async function startGame() {
-  router.push({ name: 'game' })
+  const success = await putLobbyStart(lobbyStore.selectedLobby!.id)
 }
 
 onMounted(() => {
@@ -160,6 +162,10 @@ onMounted(() => {
       <div v-if="!lobbyStore.selectedLobby?.map" class="map-information">
         <h2>Map {{ currentIndex + 1 }} / {{ mapList?.length }}</h2>
         <MapComponent v-if="selectedMap" :map="selectedMap"></MapComponent>
+        <MapComponent
+          v-if="lobbyStore.selectedLobby?.map"
+          :map="lobbyStore.selectedLobby.map"
+        ></MapComponent>
         <div>
           <a @click="prevMap">< </a>
           <button @click="chooseMap">Choose Map</button>

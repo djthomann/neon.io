@@ -8,6 +8,10 @@ import type { LobbyJoin } from '@/assets/types/events/lobbyJoin'
 import { useLobbyStore } from '@/stores/lobbies'
 import type { Player } from '@/assets/types/player'
 import type { LobbyLeave } from '@/assets/types/events/lobbyLeave'
+import type { MapChosen } from '@/assets/types/events/mapChosen'
+import type { LobbyDelete } from '@/assets/types/events/lobbyDelete'
+import router from '@/router'
+import type { GameStart } from '@/assets/types/events/gameStart'
 
 const lobbyStore = useLobbyStore()
 
@@ -40,6 +44,42 @@ stompClient.onConnect = (frame) => {
       )
     }
     console.log('Lobby-Leave:', data)
+  })
+
+  // Subscription for delete
+  stompClient.subscribe(`/topic/lobby/${props.lobbyId}/delete`, (msg: IMessage) => {
+    const data: LobbyDelete = JSON.parse(msg.body)
+
+    router.push('/lobbies')
+
+    console.log('Lobby-Delete:', data)
+  })
+
+  // Subscription for start
+  stompClient.subscribe(`/topic/lobby/${props.lobbyId}/start`, (msg: IMessage) => {
+    const data: GameStart = JSON.parse(msg.body)
+
+    router.push('/game')
+
+    console.log('Game Start:', data)
+  })
+
+  // Subscription for map
+  stompClient.subscribe(`/topic/lobby/${props.lobbyId}/map`, (msg: IMessage) => {
+    const data: MapChosen = JSON.parse(msg.body)
+
+    if (lobbyStore.selectedLobby) {
+      console.log('Lobby selected')
+      console.log(lobbyStore.selectedLobby)
+      console.log(data)
+      lobbyStore.selectedLobby = {
+        ...lobbyStore.selectedLobby,
+        map: data.map,
+      }
+      console.log(lobbyStore.selectedLobby.map)
+    }
+
+    console.log('Map Chosen:', data)
   })
 
   // Beispiel: Message senden
