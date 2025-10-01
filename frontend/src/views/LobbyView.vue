@@ -7,6 +7,7 @@ import { useUserStore } from '@/stores/user'
 import { useLobbyStore } from '@/stores/lobbies'
 import UserComponent from '@/components/UserComponent.vue'
 import LobbiesEventComponent from '@/components/communication/LobbiesEventComponent.vue'
+import PlayerView from './PlayerView.vue'
 
 const userStore = useUserStore()
 const lobbyStore = useLobbyStore()
@@ -54,12 +55,17 @@ onMounted(() => {
       </div>
       <UserComponent />
     </nav>
-    <section id="lobbies">
+    <section class="info">
+      <section id="lobbies">
       <LobbyComponent
         v-for="lobby in lobbyStore.lobbyList"
         :key="lobby.id"
         :lobby="lobby"
       ></LobbyComponent>
+    </section>
+    <section class="players">
+      <PlayerView />
+    </section>
     </section>
   </div>
 </template>
@@ -84,14 +90,25 @@ nav {
   justify-content: space-between;
 }
 
+.info {
+  width: 100%;
+  display: flex;
+}
+
 #lobbies {
-  width: 92%;
+  width: 80%;
   padding: 4% 4% 0 4%;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
   grid-column-gap: 25px;
   grid-row-gap: 25px;
+}
+
+.players {
+  width: 20%;
+  padding: 4% 4% 0 4%;
+  background-color: gray;
 }
 
 #lobby {
