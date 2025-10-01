@@ -6,6 +6,7 @@ import type { Lobby } from '../assets/types/lobby'
 import { useUserStore } from '@/stores/user'
 import { useLobbyStore } from '@/stores/lobbies'
 import UserComponent from '@/components/UserComponent.vue'
+import LobbiesEventComponent from '@/components/communication/LobbiesEventComponent.vue'
 
 const userStore = useUserStore()
 const lobbyStore = useLobbyStore()
@@ -34,8 +35,6 @@ async function postCreateLobby(): Promise<Lobby> {
 
 async function createLobby() {
   const lobby: Lobby = await postCreateLobby()
-
-  lobbyStore.lobbyList.push(lobby)
 }
 
 onMounted(() => {
@@ -45,6 +44,7 @@ onMounted(() => {
 
 <template>
   <div id="lobby">
+    <LobbiesEventComponent />
     <nav>
       <div id="lobby-navigation">
         <RouterLink to="/"><</RouterLink>

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import LobbiesStateEvent
 
 @RestController
 @RequestMapping("/api/lobbies")
@@ -37,7 +38,13 @@ class LobbyController {
 
     @PostMapping("/create")
     fun postNewLobby(@RequestParam(required = false) ownerId: Long?): Lobby {
-        return lobbyService.createLobby(ownerId)
+
+        val newLobby = lobbyService.createLobby(ownerId)
+
+        val lobbiesStateEvent = LobbiesStateEvent(lobbyService.getLobbies())
+        messagingTemplate.convertAndSend("/topic/lobbies", lobbiesStateEvent)
+
+        return newLobby
     }
 
     @PostMapping("{id}/delete")
@@ -54,6 +61,7 @@ class LobbyController {
 
             val deletedEvent = LobbyDeletedEvent(id)
             messagingTemplate.convertAndSend("/topic/lobby/${id}/delete", deletedEvent)
+            sendLobbiesState()
 
             return ResponseEntity.ok(result.getOrNull().toString())
         } else {
@@ -85,7 +93,8 @@ class LobbyController {
 
             val joinEvent = LobbyJoinEvent(playerId, player.name)
             messagingTemplate.convertAndSend("/topic/lobby/${lobbyId}/join", joinEvent)
-
+            sendLobbiesState()
+            
             return ResponseEntity.ok(result.getOrNull().toString())
         } else {
             return ResponseEntity.badRequest().body(result.exceptionOrNull()?.message ?: "Unknown error")
@@ -107,6 +116,7 @@ class LobbyController {
 
             val leaveEvent = LobbyLeaveEvent(playerId, player.name)
             messagingTemplate.convertAndSend("/topic/lobby/${lobbyId}/leave", leaveEvent)
+            sendLobbiesState()
 
             return ResponseEntity.ok(result.getOrNull().toString())
         } else {
@@ -129,6 +139,7 @@ class LobbyController {
 
             val mapChosenEvent = LobbyMapChosenEvent(map)
             messagingTemplate.convertAndSend("/topic/lobby/${lobbyId}/map", mapChosenEvent)
+            sendLobbiesState()
 
             return ResponseEntity.ok(result.getOrNull().toString())
         } else {
@@ -144,6 +155,11 @@ class LobbyController {
         messagingTemplate.convertAndSend("/topic/lobby/${lobbyId}/start", gameStartEvent)
 
         return ResponseEntity.ok("Game Started!")
+    }
+
+    fun sendLobbiesState() {
+        val lobbiesStateEvent = LobbiesStateEvent(lobbyService.getLobbies())
+        messagingTemplate.convertAndSend("/topic/lobbies", lobbiesStateEvent)
     }
 
 }
