@@ -1,6 +1,6 @@
 <template>
-    <div>
-        <h2>Players</h2>
+    <div class="box">
+        <div>Players</div>
         <li v-for="player in playersStore.players">
           {{ player.name }} (#{{ player.id }})
         </li>
@@ -36,4 +36,8 @@ onMounted(() => {
 
 </script>
 
-<style scoped></style>
+<style scoped>
+.box {
+  height: 100%;
+}
+</style>

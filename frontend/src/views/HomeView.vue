@@ -81,14 +81,14 @@ function openMaps() {
   font-size: 72pt;
   color: white;
   text-shadow:
-    0 0 7px rgb(0, 189, 0),
-    0 0 10px rgb(0, 189, 0),
-    0 0 21px rgb(0, 189, 0),
-    0 0 42px #0fa,
-    0 0 82px #0fa,
-    0 0 92px #0fa,
-    0 0 102px #0fa,
-    0 0 151px #0fa;
+    0 0 7px var(--primary),
+    0 0 10px var(--primary),
+    0 0 21px var(--primary),
+    0 0 42px  var(--primary),
+    0 0 82px  var(--primary),
+    0 0 92px  var(--primary),
+    0 0 102px  var(--primary),
+    0 0 151px  var(--primary);
 }
 
 #home {

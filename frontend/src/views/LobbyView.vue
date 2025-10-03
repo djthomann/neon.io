@@ -62,10 +62,10 @@ onMounted(() => {
         :key="lobby.id"
         :lobby="lobby"
       ></LobbyComponent>
-    </section>
-    <section class="players">
-      <PlayerView />
-    </section>
+      </section>
+      <section class="players">
+        <PlayerView />
+      </section>
     </section>
   </div>
 </template>
@@ -92,13 +92,15 @@ nav {
 
 .info {
   width: 100%;
+  height: 90vh;
   display: flex;
 }
 
 #lobbies {
-  width: 80%;
+  width: 90%;
   padding: 4% 4% 0 4%;
   display: grid;
+  overflow-y:scroll;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: repeat(5, 1fr);
   grid-column-gap: 25px;
@@ -106,8 +108,8 @@ nav {
 }
 
 .players {
-  width: 20%;
-  padding: 4% 4% 0 4%;
+  width: 10%;
+  padding: 2%;
   background-color: gray;
 }
 

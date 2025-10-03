@@ -49,19 +49,26 @@ h3 {
 
 section {
   position: relative;
+  display: flex;
 }
 
 #content {
-  padding: 5%;
+  padding: 10%;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  border-radius: 2px;
   background-color: black;
-  transition: transform 200ms;
+  transition: 0.2s ease-in-out;
 }
 
 #content:hover {
   cursor: pointer;
-  transform: translate3d(10px, -10px, 0);
+  color: black;
+  background-color: var(--primary);
+  border-radius: 2px;
+  transform: scale(1.1);
+  /* transform: translate3d(10px, -10px, 0); */
 }
 
 #ghost {
@@ -70,7 +77,14 @@ section {
   z-index: -1;
   width: 100%;
   height: 100%;
-  background-color: green;
+  border-radius: 2px;
+  background-color: var(--primary);
+  transition: 0.2s ease-in-out;
+}
+
+#content:hover + #ghost {
+  box-shadow: 0 0 10px var(--primary), 0 0 30px var(--primary), 
+              0 0 60px var(--primary), 0 0 100px var(--primary);
 }
 
 #bottom {
