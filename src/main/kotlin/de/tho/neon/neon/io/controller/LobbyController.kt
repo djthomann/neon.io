@@ -1,5 +1,7 @@
 package de.tho.neon.neon.io.controller
 
+import de.tho.neon.neon.io.business.GameService
+import de.tho.neon.neon.io.business.GameSession
 import de.tho.neon.neon.io.communication.game.GameStartEvent
 import de.tho.neon.neon.io.communication.lobby.LobbyDeletedEvent
 import de.tho.neon.neon.io.communication.lobby.LobbyJoinEvent
@@ -24,6 +26,9 @@ import LobbiesStateEvent
 @RestController
 @RequestMapping("/api/lobbies")
 class LobbyController {
+
+    @Autowired
+    private lateinit var gameService: GameService
 
     @Autowired
     private lateinit var neonMapService: NeonMapService
@@ -150,6 +155,9 @@ class LobbyController {
 
     @PostMapping("/{lobbyId}/start")
     fun startGame(@PathVariable lobbyId: Long): ResponseEntity<String> {
+
+        val game: GameSession = gameService.newGame()
+        game.startLoop()
 
         val gameStartEvent = GameStartEvent(1)
         messagingTemplate.convertAndSend("/topic/lobby/${lobbyId}/start", gameStartEvent)
