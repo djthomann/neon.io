@@ -31,7 +31,6 @@ onMounted(() => {
       <div class="nav-elements">
         <RouterLink to="/"><</RouterLink>
         <h1>This is the map page</h1>
-        <button>Das ist ein Button</button>
       </div>
       <UserComponent />
     </nav>

@@ -56,7 +56,7 @@ async function postMap() {
   const blob = new Blob([text], { type: 'text/plain' })
 
   const formData = new FormData()
-  formData.append('file', blob, 'map.txt')
+  formData.append('file', blob, 'map.nmap')
   formData.append('name', name.value)
 
   const response = await fetch('/api/maps/upload', {
@@ -84,7 +84,7 @@ function downloadMap() {
 
   const a = document.createElement('a')
   a.href = url
-  a.download = name.value ? name.value + '.txt' : 'map.txt'
+  a.download = name.value ? name.value + '.nmap' : 'map.nmap'
   a.click()
 
   URL.revokeObjectURL(url)
