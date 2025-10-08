@@ -27,9 +27,9 @@ class GameSession(
             return
         }
 
-        val vac = movementToVec(movement.direction)
+        val vec = movement.vector
 
-        val newPos = Vec3(player.x + vac.x, player.y + vac.y, player.z +vac.z)
+        val newPos = Vector3(player.x + vec.x * 0.2, player.y + vec.y * 0.2, player.z + vec.z * 0.2)
 
         if(!(newPos.y > 0)) {
             return
@@ -39,21 +39,14 @@ class GameSession(
             return   
         }
 
+        
+        if(map.positionInWalls(newPos.x, newPos.z)) {
+            return
+        }
 
         player.x = newPos.x
-            player.y = newPos.y
-            player.z = newPos.z
-    }
-
-    fun movementToVec(direction: MovementType): Vec3 {
-        return when(direction) {
-            MovementType.FORWARD -> Vec3(x = 1)
-            MovementType.BACKWARD -> Vec3(x = -1)
-            MovementType.RIGHT -> Vec3(z = 1)
-            MovementType.LEFT -> Vec3(z = -1)
-            MovementType.UP -> Vec3(y = 1)
-            MovementType.DOWN -> Vec3(y = -1)
-        }
+        player.y = newPos.y
+        player.z = newPos.z
     }
 
     fun startLoop() {

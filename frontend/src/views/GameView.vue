@@ -31,6 +31,10 @@ const wallHeight = 1
 const sceneContainer = ref<HTMLDivElement | null>(null)
 
 const scene = new THREE.Scene()
+
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
+scene.add(ambientLight)
+
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 sceneStore.setCamera(camera)
 camera.position.set(gameStore.x, 0, gameStore.y)
@@ -40,7 +44,7 @@ if (map) {
 watch(
   () => [gameStore.x, gameStore.y, gameStore.z],
   ([newX, newY, newZ]) => {
-    camera.position.set(newX, newY, newZ)
+    camera.position.set(newX * scale, newY * scale, newZ * scale)
   }
 )
 
@@ -51,26 +55,43 @@ renderer.setSize(window.innerWidth, window.innerHeight)
 sceneContainer.value?.appendChild(renderer.domElement)
 
 // Ground
-if (map) {
+/*if (map) {
   const planeGeometry = new THREE.PlaneGeometry(map?.width * scale, map?.height * scale)
   const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x333333 })
   const plane = new THREE.Mesh(planeGeometry, planeMaterial)
   plane.rotation.x = -Math.PI / 2
   plane.position.set((map.width / 2) * scale, -0.5 * scale, (map.height / 2) * scale)
   scene.add(plane)
-}
+}*/
 
 // Tiles
 if (map) {
   const geometry = new THREE.BoxGeometry(1 * scale, wallHeight * scale, 1 * scale)
-  const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x00ff00,         
+    emissive: 0x00ff00,     
+    emissiveIntensity: 2.5, 
+    side: THREE.DoubleSide,
+    metalness: 0.8,
+    roughness: 0.2
+  })
   for (let y = 0; y < map.tiles.length; y++) {
     for (let x = 0; x < map.tiles[y].length; x++) {
       if (map.tiles[y][x]) {
         const cube = new THREE.Mesh(geometry, material)
         cube.position.set(x * scale + scale / 2, 0, y * scale + scale / 2)
-        // In Szene einfügen
+      
         scene.add(cube)
+      } else {
+        const planeGeometry = new THREE.PlaneGeometry(scale, scale)
+        const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 })
+        const plane = new THREE.Mesh(planeGeometry, planeMaterial)
+
+        // Plane is on the ground
+        plane.rotation.x = -Math.PI / 2
+        plane.position.set(x * scale + scale / 2, -0.5 * scale, y * scale + scale / 2)
+
+        scene.add(plane)
       }
     }
   }
@@ -78,7 +99,7 @@ if (map) {
 
 // Walls --> When looking into +x direction
 if (map) {
-  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x999999 })
+  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x222222 })
   const planeGeometry = new THREE.PlaneGeometry(map.width * scale, (map.height / 2) * scale)
 
   // --- Top ---
@@ -116,7 +137,7 @@ if (map) {
 // Roof
 if (map) {
   const planeGeometry = new THREE.PlaneGeometry(map?.width * scale, map?.height * scale)
-  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 })
+  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x111111 })
   const plane = new THREE.Mesh(planeGeometry, planeMaterial)
   plane.rotation.x = Math.PI / 2
   plane.position.set(

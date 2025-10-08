@@ -18,7 +18,7 @@ class GameService(
     fun newGame(lobby: Lobby): GameSession? {
         val id = nextId++
         val players: Map<Long, GamePlayer> = lobby.players.associate { 
-            it.id to GamePlayer(it.id, it, 1, 1, 1) 
+            it.id to GamePlayer(it.id, it, 5.0, 5.0, 5.0) 
         }
         
         val map =  lobby.map

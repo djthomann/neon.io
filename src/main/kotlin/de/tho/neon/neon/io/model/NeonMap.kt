@@ -14,8 +14,13 @@ data class NeonMap(
     }
 ) {
 
-    fun positionInBounds(x: Long, z: Long): Boolean {
-        return x in 0L .. width.toLong() && z in 0L .. height.toLong()
+    fun positionInBounds(x: Double, z: Double): Boolean {
+        return x >= 0.0 && x <= width && z >= 0.0 && z <= height
+    }
+    
+
+    fun positionInWalls(x: Double, z: Double): Boolean {
+        return tiles[z.toInt()][x.toInt()]
     }
 
     override fun equals(other: Any?): Boolean {

@@ -9,6 +9,7 @@ import { useSceneStore } from '@/stores/scene'
 import { useUserStore } from '@/stores/user'
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
+import * as THREE from 'three'
 
 const props = defineProps({
   id: {
@@ -29,11 +30,11 @@ stompClient.onConnect = (frame) => {
   console.log('Client activated!')
 }
 
-function sendMovement(dir: MovementDirection) {
+function sendMovement(vector: THREE.Vector3) {
   if (stompClient && stompClient.connected) {
 
     const url: string = `/app/game/${props.id}/move`
-    const body: Movement = {playerId: userStore.id, direction: dir}
+    const body: Movement = {playerId: userStore.id, vector: vector}
 
     stompClient.publish({
       destination: url,
@@ -61,13 +62,26 @@ window.addEventListener('keyup', (event) => {
 })
 
 function checkKeys() {
-  if (keys['w']) sendMovement(MovementDirection.FORWARD)
-  if (keys['a']) sendMovement(MovementDirection.LEFT)
-  if (keys['s']) sendMovement(MovementDirection.BACKWARD)
-  if (keys['d']) sendMovement(MovementDirection.RIGHT)
-  if (keys[' ']) sendMovement(MovementDirection.UP)
-  if (keys['shift']) sendMovement(MovementDirection.DOWN)
-  // console.log(useSceneStore().getCameraDirection())
+  const cameraDir = useSceneStore().getCameraDirection()?.normalize()
+  const up = new THREE.Vector3(0, 1, 0)
+
+  // direction on plane
+  const forward = new THREE.Vector3(cameraDir?.x, 0, cameraDir?.z).normalize()
+  const right = new THREE.Vector3().crossVectors(forward, up).normalize()
+  const movement = new THREE.Vector3()
+
+  if (keys['w']) movement.add(forward)
+  if (keys['s']) movement.sub(forward)
+  if (keys['a']) movement.sub(right)
+  if (keys['d']) movement.add(right)
+  if (keys[' ']) movement.add(up)        
+  if (keys['shift']) movement.sub(up)    
+
+  // Don't send idle movement
+  if (movement.lengthSq() > 0) {
+    movement.normalize()
+    sendMovement(movement)
+  }
 }
 setInterval(checkKeys, 30);
 
