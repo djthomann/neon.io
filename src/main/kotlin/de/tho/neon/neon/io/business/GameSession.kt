@@ -7,10 +7,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate
 import de.tho.neon.neon.io.business.GamePlayer
 import de.tho.neon.neon.io.business.GamePosition
 import de.tho.neon.neon.io.business.MovementType
+import de.tho.neon.neon.io.model.NeonMap
 
 class GameSession(
     val id: Long,
     val length: Long,
+    val map: NeonMap,
     val players: Map<Long, GamePlayer>,
     private val messagingTemplate: SimpMessagingTemplate
 ) {
@@ -25,16 +27,32 @@ class GameSession(
             return
         }
 
-        when(movement.direction) {
-            MovementType.FORWARD -> player.x += 1
-            MovementType.BACKWARD -> player.x -= 1
-            MovementType.RIGHT -> {
-                println("MOVING RIGHT")
-                player.z += 1
-            }
-            MovementType.LEFT -> player.z -= 1
-            MovementType.UP -> player.y += 1
-            MovementType.DOWN -> player.y -= 1
+        val vac = movementToVec(movement.direction)
+
+        val newPos = Vec3(player.x + vac.x, player.y + vac.y, player.z +vac.z)
+
+        if(!(newPos.y > 0)) {
+            return
+        }
+
+        if(!map.positionInBounds(newPos.x, newPos.z)) {
+            return   
+        }
+
+
+        player.x = newPos.x
+            player.y = newPos.y
+            player.z = newPos.z
+    }
+
+    fun movementToVec(direction: MovementType): Vec3 {
+        return when(direction) {
+            MovementType.FORWARD -> Vec3(x = 1)
+            MovementType.BACKWARD -> Vec3(x = -1)
+            MovementType.RIGHT -> Vec3(z = 1)
+            MovementType.LEFT -> Vec3(z = -1)
+            MovementType.UP -> Vec3(y = 1)
+            MovementType.DOWN -> Vec3(y = -1)
         }
     }
 

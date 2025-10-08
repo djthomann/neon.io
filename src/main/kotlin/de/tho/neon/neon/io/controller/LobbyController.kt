@@ -161,7 +161,10 @@ class LobbyController {
             return ResponseEntity.badRequest().body("Lobby not found")
         }
 
-        val game: GameSession = gameService.newGame(lobby)
+        val game: GameSession? = gameService.newGame(lobby)
+        if(game == null) {
+            return ResponseEntity.badRequest().body("Game couldn't be started")
+        }
         game.startLoop()
 
         val gameStartEvent = GameStartEvent(game.id)

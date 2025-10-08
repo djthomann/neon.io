@@ -14,6 +14,10 @@ data class NeonMap(
     }
 ) {
 
+    fun positionInBounds(x: Long, z: Long): Boolean {
+        return x in 0L .. width.toLong() && z in 0L .. height.toLong()
+    }
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false

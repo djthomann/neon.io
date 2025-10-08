@@ -15,13 +15,18 @@ class GameService(
 
     var nextId: Long = 0
 
-    fun newGame(lobby: Lobby): GameSession {
+    fun newGame(lobby: Lobby): GameSession? {
         val id = nextId++
         val players: Map<Long, GamePlayer> = lobby.players.associate { 
-            it.id to GamePlayer(it.id, it, 0, 0, 0) 
+            it.id to GamePlayer(it.id, it, 1, 1, 1) 
         }
         
-        val game = GameSession(id, 30, players, messagingTemplate)
+        val map =  lobby.map
+        if(map == null) {
+            return null
+        }
+
+        val game = GameSession(id, 30, map, players, messagingTemplate)
 
         games.put(id, game)
 
