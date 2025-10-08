@@ -26,7 +26,6 @@ async function getPlayers(): Promise<Player[]> {
 
 async function fetchPlayers() {
   const players = await getPlayers()
-  console.log(players)
   playersStore.players = players
 }
 

@@ -1,13 +1,29 @@
 <template>
   <div ref="sceneContainer" id="scene"></div>
+  <GameEventComponent :id="props.id" />
+  <FrontendMovementComponent :id="props.id"/>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watchEffect, watch } from 'vue'
 import * as THREE from 'three'
 import { useLobbyStore } from '@/stores/lobbies'
+import GameEventComponent from '@/components/communication/GameEventComponent.vue'
+import { useGameStore } from '@/stores/game'
+import FrontendMovementComponent from '@/components/movement/FrontendMovementComponent.vue'
+import { useSceneStore } from '@/stores/scene'
 
+const props = defineProps({
+  id: {
+    type: Number,
+    required: true
+  }
+})
+
+const gameStore = useGameStore()
+const sceneStore = useSceneStore()
 const lobbyStore = useLobbyStore()
+
 const map = lobbyStore.selectedLobby?.map
 const scale = 1
 const wallHeight = 1
@@ -16,10 +32,18 @@ const sceneContainer = ref<HTMLDivElement | null>(null)
 
 const scene = new THREE.Scene()
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-camera.position.set(1, 0, 1)
+sceneStore.setCamera(camera)
+camera.position.set(gameStore.x, 0, gameStore.y)
 if (map) {
   // camera.position.set(map.width / 2, 2, map.height / 2)
 }
+watch(
+  () => [gameStore.x, gameStore.y, gameStore.z],
+  ([newX, newY, newZ]) => {
+    camera.position.set(newX, newY, newZ)
+  }
+)
+
 // camera.lookAt(1, 0, 0)
 
 const renderer = new THREE.WebGLRenderer()
@@ -102,41 +126,6 @@ if (map) {
   )
   scene.add(plane)
 }
-
-// MOVEMENT
-
-const speed = 0.1
-
-const keys: Record<string, boolean> = {}
-
-window.addEventListener('keydown', (event) => {
-  keys[event.key.toLowerCase()] = true
-})
-
-window.addEventListener('keyup', (event) => {
-  keys[event.key.toLowerCase()] = false
-})
-
-function updateCamera() {
-  const forward = new THREE.Vector3()
-  camera.getWorldDirection(forward)
-
-  const right = new THREE.Vector3()
-  right.crossVectors(forward, camera.up).normalize()
-
-  // forward / backward
-  if (keys['w']) camera.position.add(forward.clone().multiplyScalar(speed))
-  if (keys['s']) camera.position.add(forward.clone().multiplyScalar(-speed))
-
-  // left / right
-  if (keys['a']) camera.position.add(right.clone().multiplyScalar(-speed))
-  if (keys['d']) camera.position.add(right.clone().multiplyScalar(speed))
-
-  // up / down
-  if (keys[' ']) camera.position.y += speed
-  if (keys['shift']) camera.position.y -= speed
-}
-
 const euler = new THREE.Euler(0, 0, 0, 'YXZ')
 
 function onMouseMove(event: MouseEvent) {
@@ -173,7 +162,6 @@ onUnmounted(() => {
 })
 
 function animate() {
-  updateCamera()
   renderer.render(scene, camera)
 }
 renderer.setAnimationLoop(animate)

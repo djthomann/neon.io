@@ -59,7 +59,7 @@ stompClient.onConnect = (frame) => {
   stompClient.subscribe(`/topic/lobby/${props.lobbyId}/start`, (msg: IMessage) => {
     const data: GameStart = JSON.parse(msg.body)
 
-    router.push('/game')
+    router.push(`/game/${data.gameId}`)
 
     console.log('Game Start:', data)
   })
@@ -70,8 +70,6 @@ stompClient.onConnect = (frame) => {
 
     if (lobbyStore.selectedLobby) {
       console.log('Lobby selected')
-      console.log(lobbyStore.selectedLobby)
-      console.log(data)
       lobbyStore.selectedLobby = {
         ...lobbyStore.selectedLobby,
         map: data.map,

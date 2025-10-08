@@ -36,9 +36,12 @@ const router = createRouter({
       props: true,
     },
     {
-      path: '/game',
+      path: '/game/:id',
       name: 'game',
       component: GameView,
+      props: route => ({
+        id: Number(route.params.id)
+      })
     },
   ],
 })

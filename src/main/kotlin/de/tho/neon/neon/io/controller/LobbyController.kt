@@ -156,10 +156,15 @@ class LobbyController {
     @PostMapping("/{lobbyId}/start")
     fun startGame(@PathVariable lobbyId: Long): ResponseEntity<String> {
 
-        val game: GameSession = gameService.newGame()
+        val lobby = lobbyService.getLobby(lobbyId)
+        if(lobby == null) {
+            return ResponseEntity.badRequest().body("Lobby not found")
+        }
+
+        val game: GameSession = gameService.newGame(lobby)
         game.startLoop()
 
-        val gameStartEvent = GameStartEvent(1)
+        val gameStartEvent = GameStartEvent(game.id)
         messagingTemplate.convertAndSend("/topic/lobby/${lobbyId}/start", gameStartEvent)
 
         return ResponseEntity.ok("Game Started!")
