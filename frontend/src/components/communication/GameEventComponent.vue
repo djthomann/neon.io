@@ -40,6 +40,14 @@ stompClient.onConnect = (frame) => {
       gameStore.x = data.x
       gameStore.y = data.y
       gameStore.z = data.z
+    } else {
+      for(const player of gameStore.players!) {
+        if(player.id === data.id) {
+          player.x = data.x
+          player.y = data.y
+          player.z = data.z
+        }
+      }
     }
   })
 

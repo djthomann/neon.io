@@ -8,5 +8,7 @@ data class GamePlayer(
     val user: Player,
     var x: Double,
     var y: Double,
-    var z: Double
+    var z: Double,
+
+    var vy: Double = 0.0
 )

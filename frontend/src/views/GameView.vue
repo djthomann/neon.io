@@ -12,6 +12,7 @@ import GameEventComponent from '@/components/communication/GameEventComponent.vu
 import { useGameStore } from '@/stores/game'
 import FrontendMovementComponent from '@/components/movement/FrontendMovementComponent.vue'
 import { useSceneStore } from '@/stores/scene'
+import { useUserStore } from '@/stores/user'
 
 const props = defineProps({
   id: {
@@ -23,6 +24,7 @@ const props = defineProps({
 const gameStore = useGameStore()
 const sceneStore = useSceneStore()
 const lobbyStore = useLobbyStore()
+const userStore = useUserStore()
 
 const map = lobbyStore.selectedLobby?.map
 const scale = 1
@@ -53,6 +55,32 @@ watch(
 const renderer = new THREE.WebGLRenderer()
 renderer.setSize(window.innerWidth, window.innerHeight)
 sceneContainer.value?.appendChild(renderer.domElement)
+
+// Players
+gameStore.players = lobbyStore.selectedLobby!.players
+const playerMeshes = new Map<number, THREE.Mesh>
+watch(
+    () => gameStore.players,
+    (players) => {
+      for (const p of players!) {
+        if(p.id === userStore.id) continue
+        // mesh already there?
+        if (!playerMeshes.has(p.id)) {
+          const geometry = new THREE.BoxGeometry(0.5 * scale, 1 * scale, 0.5 * scale)
+          const material = new THREE.MeshBasicMaterial({ color: 0x0000ff })
+          const mesh = new THREE.Mesh(geometry, material)
+          mesh.position.set(5, 5, 5)
+          scene.add(mesh)
+          playerMeshes.set(p.id, mesh)
+        } else {
+          // update mesh positions
+          const mesh = playerMeshes.get(p.id)!
+          mesh.position.set(p.x, p.y, p.z)
+        }
+      }
+    },
+    { deep: true, immediate: true }
+  )
 
 // Ground
 /*if (map) {
