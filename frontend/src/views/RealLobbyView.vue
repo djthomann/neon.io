@@ -10,7 +10,7 @@ import { useLobbyStore } from '@/stores/lobbies'
 import { useMapStore } from '@/stores/maps'
 import { useUserStore } from '@/stores/user'
 import { storeToRefs } from 'pinia'
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
@@ -135,6 +135,10 @@ async function startGame() {
 onMounted(() => {
   fetchLobby()
   fetchMaps()
+})
+
+onUnmounted(() => {
+  leaveLobby()
 })
 </script>
 

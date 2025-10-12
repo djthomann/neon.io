@@ -1,8 +1,10 @@
 <template>
     <nav>
       <div class="nav-elements">
-        <RouterLink to="/"><</RouterLink>
+        <div class="main-elements">
+          <a @click="routerBack"><ChevronLeft /></a>
         <slot name="title"><h1>{{ routeTitle }}</h1></slot>
+        </div>
         <slot name="buttons"></slot>
       </div>
       <UserComponent />
@@ -10,13 +12,32 @@
 </template>
 
 <script lang="ts" setup>
+import { ChevronLeft } from 'lucide-vue-next';
 import { useRoute, useRouter } from 'vue-router';
 import UserComponent from './UserComponent.vue';
-import { computed } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 
 const router = useRouter()
 const route = useRoute()
 const routeTitle = computed(() => route.meta.title ?? 'Title not found')
+
+function handleEscape(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    routerBack()
+  }
+}
+
+function routerBack() {
+  router.back()
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleEscape)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleEscape)
+})
 
 </script>
 
@@ -29,6 +50,12 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
+}
+
+.main-elements {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .nav-elements {
