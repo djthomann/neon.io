@@ -3,13 +3,18 @@
 </template>
 
 <script lang="ts" setup>
+import type { GameEnd } from '@/assets/types/events/gameEnd';
 import type { GamePosition } from '@/assets/types/events/gamePosition';
+import type { GameTime } from '@/assets/types/events/gameTime';
 import type { LobbiesState } from '@/assets/types/events/lobbiesState';
 import { useGameStore } from '@/stores/game';
 import { useUserStore } from '@/stores/user';
 import { Client, type IMessage } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
 
 const props = defineProps({
   id: {
@@ -32,7 +37,7 @@ const stompClient = new Client({
 stompClient.onConnect = (frame) => {
   console.log('Subscriptions activated!')
 
-  // Subscription for game updates
+  // Subscription for game position updates
   stompClient.subscribe(`/topic/game/${props.id}`, (msg: IMessage) => {
     const data: GamePosition = JSON.parse(msg.body)
   
@@ -49,6 +54,18 @@ stompClient.onConnect = (frame) => {
         }
       }
     }
+  })
+
+  stompClient.subscribe(`/topic/game/${props.id}/time`, (msg: IMessage) => {
+    const data: GameTime = JSON.parse(msg.body)
+
+    gameStore.time = data.time
+  })
+
+  stompClient.subscribe(`/topic/game/${props.id}/end`, (msg: IMessage) => {
+    const data: GameEnd = JSON.parse(msg.body)
+
+    router.push("/game/finished")
   })
 
 }

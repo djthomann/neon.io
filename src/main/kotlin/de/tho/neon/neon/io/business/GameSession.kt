@@ -8,10 +8,12 @@ import de.tho.neon.neon.io.business.GamePlayer
 import de.tho.neon.neon.io.business.GamePosition
 import de.tho.neon.neon.io.business.MovementType
 import de.tho.neon.neon.io.model.NeonMap
+import de.tho.neon.neon.io.business.GameTime
+import de.tho.neon.neon.io.communication.game.GameEndEvent
 
 class GameSession(
     val id: Long,
-    val length: Long = 60,
+    val length: Long = 10,
     val map: NeonMap,
     val players: Map<Long, GamePlayer>,
     private val messagingTemplate: SimpMessagingTemplate
@@ -19,6 +21,8 @@ class GameSession(
     
     private val executor = Executors.newSingleThreadScheduledExecutor()
     private var future: ScheduledFuture<*>? = null
+
+    private var startTime: Long = 0
 
     private val tickInterval: Long = 30
     private val gravity: Double = -5.0 / tickInterval
@@ -62,6 +66,9 @@ class GameSession(
     }
 
     fun startLoop() {
+
+        startTime = System.currentTimeMillis()
+
         future = executor.scheduleAtFixedRate(
             { tick() },
             0,
@@ -69,7 +76,12 @@ class GameSession(
             TimeUnit.MILLISECONDS
         )
 
-        println(players)
+        executor.scheduleAtFixedRate(
+            { sendTime() }, 
+            0, 
+            1000, 
+            TimeUnit.MILLISECONDS
+        )
 
         executor.schedule({
             stopLoop()
@@ -80,6 +92,7 @@ class GameSession(
         future?.cancel(false)
         println("Game $id: finished.")
         executor.shutdown()
+        sendGameFinished()
     }
 
     private fun tick() {
@@ -107,6 +120,25 @@ class GameSession(
             "/topic/game/$id",
             GamePosition(player.id, player.x, player.y, player.z)
         )
+    }
+
+    fun sendTime() {
+
+        val elapsedTimeSeconds = (System.currentTimeMillis() - startTime) / 1000
+        val remainingTime = length - elapsedTimeSeconds
+        
+        println("Game $id: Time remaining: $remainingTime")
+
+        messagingTemplate.convertAndSend(
+            "/topic/game/$id/time",
+            GameTime(remainingTime)
+        )
+
+    }
+
+    fun sendGameFinished() {
+        val gameEndEvent = GameEndEvent(id)
+        messagingTemplate.convertAndSend("/topic/game/$id/end", gameEndEvent)
     }
 
 }

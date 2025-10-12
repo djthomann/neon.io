@@ -7,7 +7,9 @@ export const useGameStore = defineStore('game', () => {
   const y = ref<number>(0)
   const z = ref<number>(0)
 
+  const time = ref<number>(100)
+
   const players = ref<Player[] | null>(null)
 
-  return { x, y, z, players }
+  return { time, x, y, z, players }
 })

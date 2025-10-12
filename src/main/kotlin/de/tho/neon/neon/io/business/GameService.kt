@@ -26,7 +26,7 @@ class GameService(
             return null
         }
 
-        val game = GameSession(id, 60, map, players, messagingTemplate)
+        val game = GameSession(id, 10, map, players, messagingTemplate)
 
         games.put(id, game)
 

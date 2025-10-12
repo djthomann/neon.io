@@ -3,6 +3,7 @@ import type { Lobby } from '@/assets/types/lobby'
 import type { NeonMap } from '@/assets/types/map'
 import LobbyEventComponent from '@/components/communication/LobbyEventComponent.vue'
 import MapComponent from '@/components/MapComponent.vue'
+import NavBarComponent from '@/components/NavBarComponent.vue'
 import UserComponent from '@/components/UserComponent.vue'
 import { getMaps } from '@/service/mapService'
 import { useLobbyStore } from '@/stores/lobbies'
@@ -13,6 +14,7 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const props = defineProps<{ id: string }>()
 
 const userStore = useUserStore()
 
@@ -138,20 +140,21 @@ onMounted(() => {
 
 <template>
   <div class="detail">
-    <nav id="navigation">
-      <LobbyEventComponent
+    <LobbyEventComponent
         v-if="lobbyStore.selectedLobby"
         :lobby-id="lobbyStore.selectedLobby.id"
       />
-      <div id="lobby-navigation">
-        <a @click="leaveLobby"><</a>
-        <h1 v-if="lobbyStore.selectedLobby">Welcome to Lobby {{ lobbyStore.selectedLobby.id }}</h1>
-        <button @click="fetchLobby">Fetch updates</button>
-        <button @click="fetchMaps">Get Maps</button>
-        <button @click="deleteLobby">Delete lobby</button>
-      </div>
-      <UserComponent />
-    </nav>
+    <NavBarComponent>
+        <template #title>
+          <h1 v-if="lobbyStore.selectedLobby">Welcome to Lobby {{ lobbyStore.selectedLobby.id }}</h1>
+        </template>
+        <template #buttons>
+          <button @click="leaveLobby">Leave Lobby</button>
+          <button @click="fetchLobby">Fetch updates</button>
+          <button @click="fetchMaps">Get Maps</button>
+          <button @click="deleteLobby">Delete lobby</button>
+        </template>
+      </NavBarComponent>
     <section id="information">
       <div id="player-information">
         <h2>Players</h2>
@@ -190,24 +193,6 @@ a {
 
 h2 {
   margin: 0;
-}
-
-#navigation {
-  display: flex;
-  padding: 0 4%;
-  width: 92%;
-  height: 10vh;
-  background-color: black;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#lobby-navigation {
-  display: flex;
-  flex-direction: row;
-  gap: 25px;
-  align-items: center;
-  justify-content: space-between;
 }
 
 #information {

@@ -8,6 +8,7 @@ import { useLobbyStore } from '@/stores/lobbies'
 import UserComponent from '@/components/UserComponent.vue'
 import LobbiesEventComponent from '@/components/communication/LobbiesEventComponent.vue'
 import PlayerView from './PlayerView.vue'
+import NavBarComponent from '@/components/NavBarComponent.vue'
 
 const userStore = useUserStore()
 const lobbyStore = useLobbyStore()
@@ -46,15 +47,12 @@ onMounted(() => {
 <template>
   <div id="lobby">
     <LobbiesEventComponent />
-    <nav>
-      <div id="lobby-navigation">
-        <RouterLink to="/"><</RouterLink>
-        <h1>This is the lobby page</h1>
+    <NavBarComponent>
+      <template #buttons>
         <button @click="fetchLobbies">Fetch lobbies</button>
         <button @click="createLobby">Create lobby</button>
-      </div>
-      <UserComponent />
-    </nav>
+      </template>
+    </NavBarComponent>
     <section class="info">
       <section id="lobbies">
       <LobbyComponent
@@ -71,24 +69,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-nav {
-  padding: 0 4%;
-  width: 92%;
-  height: 10vh;
-
-  background-color: black;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-#lobby-navigation {
-  display: flex;
-  flex-direction: row;
-  gap: 25px;
-  align-items: center;
-  justify-content: space-between;
-}
 
 .info {
   width: 100%;

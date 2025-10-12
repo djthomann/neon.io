@@ -10,6 +10,7 @@ import { useMapStore } from '@/stores/maps'
 import { storeToRefs } from 'pinia'
 import { getMaps } from '@/service/mapService'
 import MapComponent from '@/components/MapComponent.vue'
+import NavBarComponent from '@/components/NavBarComponent.vue'
 
 const userStore = useUserStore()
 
@@ -27,13 +28,7 @@ onMounted(() => {
 
 <template>
   <div class="root">
-    <nav>
-      <div class="nav-elements">
-        <RouterLink to="/"><</RouterLink>
-        <h1>This is the map page</h1>
-      </div>
-      <UserComponent />
-    </nav>
+    <NavBarComponent />
     <section class="maps">
       <MapComponent v-for="map in mapList" :map="map" />
     </section>
@@ -41,24 +36,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-nav {
-  padding: 0 4%;
-  width: 92%;
-  height: 10vh;
-  background-color: black;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nav-elements {
-  display: flex;
-  flex-direction: row;
-  gap: 25px;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .root {
   position: absolute;
   top: 0;

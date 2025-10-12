@@ -1,5 +1,6 @@
 <template>
   <div ref="sceneContainer" id="scene"></div>
+  <GameTimeComponent />
   <GameEventComponent :id="props.id" />
   <FrontendMovementComponent :id="props.id"/>
 </template>
@@ -13,6 +14,7 @@ import { useGameStore } from '@/stores/game'
 import FrontendMovementComponent from '@/components/movement/FrontendMovementComponent.vue'
 import { useSceneStore } from '@/stores/scene'
 import { useUserStore } from '@/stores/user'
+import GameTimeComponent from '@/components/GameTimeComponent.vue'
 
 const props = defineProps({
   id: {
@@ -34,8 +36,16 @@ const sceneContainer = ref<HTMLDivElement | null>(null)
 
 const scene = new THREE.Scene()
 
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
-scene.add(ambientLight)
+// const ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
+// scene.add(ambientLight)
+
+const pointLight = new THREE.PointLight(0xffffff, 1, 50)
+pointLight.position.set(5, 3, 5)
+scene.add(pointLight)
+
+// Light Helper
+const pointLightHelper = new THREE.PointLightHelper(pointLight, 1)
+// scene.add(pointLightHelper)
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
 sceneStore.setCamera(camera)
@@ -97,11 +107,11 @@ if (map) {
   const geometry = new THREE.BoxGeometry(1 * scale, wallHeight * scale, 1 * scale)
   const material = new THREE.MeshStandardMaterial({
     color: 0x00ff00,         
-    emissive: 0x00ff00,     
-    emissiveIntensity: 2.5, 
+    // emissive: 0x00ff00,     
+    emissiveIntensity: 0.1, 
     side: THREE.DoubleSide,
-    metalness: 0.8,
-    roughness: 0.2
+    metalness: 0.1,
+    roughness: 1
   })
   for (let y = 0; y < map.tiles.length; y++) {
     for (let x = 0; x < map.tiles[y].length; x++) {
@@ -173,7 +183,7 @@ if (map) {
     (map.height / 2) * scale - 0.5 * scale,
     (map.height / 2) * scale,
   )
-  scene.add(plane)
+  // scene.add(plane)
 }
 const euler = new THREE.Euler(0, 0, 0, 'YXZ')
 
