@@ -4,6 +4,7 @@ import type { Player } from '../assets/types/player'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import HomeAnimationView from './HomeAnimationView.vue'
+import UserComponent from '@/components/UserComponent.vue'
 
 const userStore = useUserStore()
 const username = ref('')
@@ -19,12 +20,15 @@ async function postUsername(name: string): Promise<Player> {
   return data as Player
 }
 
-async function joinLobby() {
+async function sendUsername() {
   if (!userStore.username) {
     const newPlayer = await postUsername(username.value)
     userStore.id = newPlayer.id
     userStore.username = newPlayer.name
   }
+}
+
+async function joinLobby() {
   router.push('/lobbies')
 }
 
@@ -40,23 +44,28 @@ function openMaps() {
 <template>
   <div id="home">
     <div id="menu">
-      <h1 id="title">neon.io</h1>
-      <label v-if="!userStore.username" for="username">Enter Username:</label>
-      <input
-        @keydown.enter="joinLobby"
-        v-if="!userStore.username"
-        v-model="username"
-        placeholder="Your username goes here"
-        type="text"
-        name="username"
-      />
-      <p v-if="userStore.username">Welcome {{ userStore.username }}</p>
-      <p>{{ error }}</p>
-      <div class="buttons">
-        <button @click="joinLobby">Join Lobby</button>
-        <button @click="openMaps">Open Maps</button>
-        <button @click="openMapCreator">Create Map</button>
+      <h1 class="title">neon.io</h1>
+      <div class="username-field" v-if="!userStore.username" >
+        <label for="username">Username</label>
+        <input
+          @keydown.enter="sendUsername"
+          v-if="!userStore.username"
+          v-model="username"
+          placeholder="Your username goes here"
+          type="text"
+          name="username"
+        />
       </div>
+      <UserComponent v-if="userStore.username"></UserComponent>
+      <p>{{ error }}</p>
+      <transition name="slide-fade">
+        <div class="buttons" v-if="userStore.username">
+          <button @click="joinLobby">Join Lobby</button>
+          <button @click="openMaps">Open Maps</button>
+          <button @click="openMapCreator">Create Map</button>
+        </div>
+      </transition>
+
     </div>
     <HomeAnimationView />
   </div>
@@ -65,18 +74,40 @@ function openMaps() {
 <style scoped>
 #menu {
   width: 40%;
+  height: 80%;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
 }
 
-.buttons {
+.username-field {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-#title {
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.slide-fade-enter-active, .slide-fade-leave-active {
+  transition: all 1s ease;
+}
+.slide-fade-enter-from, .slide-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+  height: 0;
+}
+.slide-fade-enter-to, .slide-fade-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+  height: auto;
+}
+
+.title {
   user-select: none;
   font-size: 72pt;
   color: white;
@@ -89,10 +120,12 @@ function openMaps() {
     0 0 92px  var(--primary),
     0 0 102px  var(--primary),
     0 0 151px  var(--primary);
+  transition: transform 1s ease;
 }
 
 #home {
   width: 100%;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: space-between;

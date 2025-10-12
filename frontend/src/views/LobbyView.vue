@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import LobbyComponent from '../components/LobbyComponent.vue'
 import type { Lobby } from '../assets/types/lobby'
@@ -12,6 +12,12 @@ import NavBarComponent from '@/components/NavBarComponent.vue'
 
 const userStore = useUserStore()
 const lobbyStore = useLobbyStore()
+
+const playersVisible = ref<boolean>(true)
+
+function showPlayers() {
+  playersVisible.value = !playersVisible.value
+}
 
 async function getLobbies(): Promise<Lobby[]> {
   const res = await fetch('/api/lobbies', { method: 'GET' })
@@ -46,29 +52,37 @@ onMounted(() => {
 
 <template>
   <div id="lobby">
-    <LobbiesEventComponent />
+    <LobbiesEventComponent/>
     <NavBarComponent>
       <template #buttons>
         <button @click="fetchLobbies">Fetch lobbies</button>
         <button @click="createLobby">Create lobby</button>
+        <button @click="showPlayers">Show players</button>
       </template>
     </NavBarComponent>
     <section class="info">
-      <section id="lobbies">
+      <section id="lobbies" class="sidebar">
       <LobbyComponent
         v-for="lobby in lobbyStore.lobbyList"
         :key="lobby.id"
         :lobby="lobby"
       ></LobbyComponent>
       </section>
-      <section class="players">
-        <PlayerView />
-      </section>
+      <PlayerView :players-visible="playersVisible" />
     </section>
   </div>
 </template>
 
 <style scoped>
+
+.sidebar {
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none;
+}
 
 .info {
   width: 100%;
@@ -77,7 +91,7 @@ onMounted(() => {
 }
 
 #lobbies {
-  width: 90%;
+  width: 100%;
   padding: 4% 4% 0 4%;
   display: grid;
   overflow-y:scroll;
