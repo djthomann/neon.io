@@ -30,7 +30,7 @@ stompClient.onConnect = (frame) => {
   // Subscription for joins
   stompClient.subscribe(`/topic/lobby/${props.lobbyId}/join`, (msg: IMessage) => {
     const data: LobbyJoin = JSON.parse(msg.body)
-    const newPlayer: Player = { id: data.playerId, name: data.name }
+    const newPlayer: Player = { id: data.playerId, name: data.name, x: 0, y: 0, z: 0 }
     lobbyStore.selectedLobby?.players.push(newPlayer)
     console.log('Lobby-Join:', data)
   })
