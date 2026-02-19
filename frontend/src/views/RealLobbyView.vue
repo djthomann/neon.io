@@ -138,27 +138,24 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  leaveLobby()
+  postLeaveLobby(lobbyStore.selectedLobby!.id)
 })
 </script>
 
 <template>
   <div class="detail">
-    <LobbyEventComponent
-        v-if="lobbyStore.selectedLobby"
-        :lobby-id="lobbyStore.selectedLobby.id"
-      />
+    <LobbyEventComponent v-if="lobbyStore.selectedLobby" :lobby-id="lobbyStore.selectedLobby.id" />
     <NavBarComponent>
-        <template #title>
-          <h1 v-if="lobbyStore.selectedLobby">Welcome to Lobby {{ lobbyStore.selectedLobby.id }}</h1>
-        </template>
-        <template #buttons>
-          <button @click="leaveLobby">Leave Lobby</button>
-          <button @click="fetchLobby">Fetch updates</button>
-          <button @click="fetchMaps">Get Maps</button>
-          <button @click="deleteLobby">Delete lobby</button>
-        </template>
-      </NavBarComponent>
+      <template #title>
+        <h1 v-if="lobbyStore.selectedLobby">Welcome to Lobby {{ lobbyStore.selectedLobby.id }}</h1>
+      </template>
+      <template #buttons>
+        <button @click="leaveLobby">Leave Lobby</button>
+        <button @click="fetchLobby">Fetch updates</button>
+        <button @click="fetchMaps">Get Maps</button>
+        <button @click="deleteLobby">Delete lobby</button>
+      </template>
+    </NavBarComponent>
     <section id="information">
       <div id="player-information">
         <h2>Players</h2>
