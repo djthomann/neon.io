@@ -4,11 +4,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.ScheduledFuture
 import org.springframework.messaging.simp.SimpMessagingTemplate
-import de.tho.neon.neon.io.business.GamePlayer
-import de.tho.neon.neon.io.business.GamePosition
-import de.tho.neon.neon.io.business.MovementType
 import de.tho.neon.neon.io.model.NeonMap
-import de.tho.neon.neon.io.business.GameTime
 import de.tho.neon.neon.io.communication.game.GameEndEvent
 
 class GameSession(
@@ -29,7 +25,24 @@ class GameSession(
     private val jumpVelocity: Double = 25.0 / tickInterval
     private val groundLevel = 0.0
 
-    fun movePlayer(movement: GameMovement) {
+    private var lasers = mutableListOf<GameLaser>()
+
+    fun processPlayerAttack(attack: GameAttack) {
+        val player = players[attack.playerId]
+
+        if(player != null) {
+            lasers.add(
+                GameLaser(
+                    shotAt = System.currentTimeMillis(),
+                    origin = Vector3(player.x, player.y, player.z),
+                    direction = attack.vector
+                )
+            )
+            println("ADDED LASER")
+        }
+
+    }
+    fun processPlayerMovement(movement: GameMovement) {
         val player = players[movement.playerId]
 
         if(player == null) {
@@ -96,11 +109,28 @@ class GameSession(
     }
 
     private fun tick() {
-        println("Game $id: TICK!")
+
+        val tickTime = System.currentTimeMillis()
+
+        // println("Game $id: TICK!")
         for((_, player) in players) {
             applyGravity(player)
             sendPosition(player)
         }
+
+        lasers =  lasers.filter { laser ->  tickTime - laser.shotAt < 5000 }.toMutableList()
+
+        sendLasers(lasers)
+    }
+
+    private fun sendLasers(lasers: List<GameLaser>) {
+
+        println("Sending laser: $lasers")
+
+        messagingTemplate.convertAndSend(
+            "/topic/game/$id/lasers",
+            lasers
+        )
     }
 
     private fun applyGravity(player: GamePlayer) {
@@ -117,7 +147,7 @@ class GameSession(
 
     fun sendPosition(player: GamePlayer) {
         messagingTemplate.convertAndSend(
-            "/topic/game/$id",
+            "/topic/game/$id/position",
             GamePosition(player.id, player.x, player.y, player.z)
         )
     }

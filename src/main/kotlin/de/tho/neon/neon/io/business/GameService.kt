@@ -2,9 +2,7 @@ package de.tho.neon.neon.io.business
 
 import org.springframework.stereotype.Service
 import org.springframework.messaging.simp.SimpMessagingTemplate
-import de.tho.neon.neon.io.business.GameSession
 import de.tho.neon.neon.io.model.Lobby
-import de.tho.neon.neon.io.business.GamePlayer
 
 @Service
 class GameService(
@@ -26,7 +24,7 @@ class GameService(
             return null
         }
 
-        val game = GameSession(id, 10, map, players, messagingTemplate)
+        val game = GameSession(id, 100, map, players, messagingTemplate)
 
         games.put(id, game)
 
@@ -34,8 +32,13 @@ class GameService(
 
     }
 
-    fun processMovement(gameId: Long, movement: GameMovement) {
+    fun sendMovementToGame(gameId: Long, movement: GameMovement) {
         println("Sending movement to game" + games)
-        games[gameId]?.movePlayer(movement)
+        games[gameId]?.processPlayerMovement(movement)
+    }
+
+    fun sendAttackToGame(gameId: Long, attack: GameAttack) {
+        println("Sending movement to game" + games)
+        games[gameId]?.processPlayerAttack(attack)
     }
 }

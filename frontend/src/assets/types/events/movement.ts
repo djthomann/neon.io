@@ -1,7 +1,6 @@
-import type { Vector3 } from "three";
-import type { MovementDirection } from "./movementDirections";
+import type { Vector3 } from 'three'
 
 export interface Movement {
-    playerId: number,
-    vector: Vector3
+  playerId: number
+  vector: Vector3
 }

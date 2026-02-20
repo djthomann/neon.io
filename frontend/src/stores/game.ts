@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { Player } from '@/assets/types/player'
+import type { GameLaser } from '@/assets/types/events/gameLaser'
 
 export const useGameStore = defineStore('game', () => {
   const x = ref<number>(0)
@@ -11,5 +12,7 @@ export const useGameStore = defineStore('game', () => {
 
   const players = ref<Player[] | null>(null)
 
-  return { time, x, y, z, players }
+  const lasers = ref<GameLaser[]>([])
+
+  return { time, x, y, z, players, lasers }
 })
