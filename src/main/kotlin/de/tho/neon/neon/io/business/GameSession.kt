@@ -36,7 +36,12 @@ class GameSession(
             return
         }
 
-        // player exists and can shoot
+        if(playerShooting.lastShotTime != null) {
+            return
+        }
+
+        // player exists and isn't hit and isn't on cooldown
+        playerShooting.lastShotTime = attackTime
 
         val laser = GameLaser(
             shotAt = System.currentTimeMillis(),
@@ -140,6 +145,7 @@ class GameSession(
         // println("Game $id: TICK!")
         for((_, player) in players) {
             updateHitState(tickTime, player)
+            updateShootCooldown(tickTime, player)
             applyGravity(player)
             sendPlayerInfo(player)
         }
@@ -159,6 +165,19 @@ class GameSession(
         } else {
             println("STILL HIT")
         }
+    }
+
+    private fun updateShootCooldown(tickTime: Long, player: GamePlayer) {
+
+        val playerLastShot = player.lastShotTime ?: return
+
+        // Check if player is okay again
+        if(tickTime - playerLastShot > 200) {
+            player.lastShotTime = null
+        } else {
+            println("STILL ON COOLDOWN")
+        }
+
     }
 
     private fun sendLasers(lasers: List<GameLaser>) {
