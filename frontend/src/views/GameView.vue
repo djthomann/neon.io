@@ -38,8 +38,8 @@ const userStore = useUserStore()
 
 const map = lobbyStore.selectedLobby?.map
 const scale = 1
-const wallHeight = 2.5
-const roofHeight = 3
+const wallHeight = 2
+const roofHeight = wallHeight + 1
 
 const sceneContainer = ref<HTMLDivElement | null>(null)
 
@@ -166,7 +166,7 @@ if (map) {
         scene.add(cube)
       } else {
         const planeGeometry = new THREE.PlaneGeometry(scale, scale)
-        const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 })
+        const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x111111 })
         const plane = new THREE.Mesh(planeGeometry, planeMaterial)
 
         // Plane is on the ground
@@ -182,49 +182,49 @@ if (map) {
 // Walls --> When looking into +x direction
 if (map) {
   const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x222222 })
-  const planeGeometry = new THREE.PlaneGeometry(map.width * scale, (map.height / 2) * scale)
+  const planeGeometry = new THREE.PlaneGeometry(map.width * scale, roofHeight * scale)
 
   // --- Top ---
   const topPlane = new THREE.Mesh(planeGeometry, planeMaterial)
   topPlane.rotation.y = Math.PI // nach innen drehen
   topPlane.position.set(
     (map.width / 2) * scale,
-    (map.height / 4) * scale - 0.5 * scale,
+    (roofHeight / 2) * scale - 0.5 * scale,
     map.height * scale,
   )
   scene.add(topPlane)
 
   // --- Bottom ---
   const bottomPlane = new THREE.Mesh(planeGeometry, planeMaterial)
-  bottomPlane.position.set((map.width / 2) * scale, (map.height / 4) * scale - 0.5 * scale, 0)
+  bottomPlane.position.set((map.width / 2) * scale, (roofHeight / 2) * scale - 0.5 * scale, 0)
   scene.add(bottomPlane)
 
   // --- Left ---
   const leftPlane = new THREE.Mesh(planeGeometry, planeMaterial)
   leftPlane.rotation.y = Math.PI / 2
-  leftPlane.position.set(0, (map.height / 4) * scale - 0.5 * scale, (map.height / 2) * scale)
+  leftPlane.position.set(0, (roofHeight / 2) * scale - 0.5 * scale, (map.width / 2) * scale)
   scene.add(leftPlane)
 
   // --- Right ---
   const rightPlane = new THREE.Mesh(planeGeometry, planeMaterial)
   rightPlane.rotation.y = -Math.PI / 2
   rightPlane.position.set(
-    map.width * scale,
-    (map.height / 4) * scale - 0.5 * scale,
-    (map.height / 2) * scale,
+    map.height * scale,
+    (roofHeight / 2) * scale - 0.5 * scale,
+    (map.width / 2) * scale,
   )
   scene.add(rightPlane)
 }
 
 // Roof --> Not working correctly
-// if (map) {
-//   const planeGeometry = new THREE.PlaneGeometry(map?.width * scale, map?.height * scale)
-//   const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x111111 })
-//   const plane = new THREE.Mesh(planeGeometry, planeMaterial)
-//   plane.rotation.x = Math.PI / 2
-//   plane.position.set((map.width / 2) * scale, (map.height / 2) * scale - 0.5 * scale, 2.5 * scale)
-//   // scene.add(plane)
-// }
+if (map) {
+  const planeGeometry = new THREE.PlaneGeometry(map?.width * scale, map?.height * scale)
+  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x111111 })
+  const plane = new THREE.Mesh(planeGeometry, planeMaterial)
+  plane.rotation.x = Math.PI / 2
+  plane.position.set(map?.width / 2, roofHeight * scale - 0.5 * scale, map.width / 2)
+  scene.add(plane)
+}
 const euler = new THREE.Euler(0, 0, 0, 'YXZ')
 
 function onMouseMove(event: MouseEvent) {
