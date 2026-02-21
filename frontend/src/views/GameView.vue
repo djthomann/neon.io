@@ -38,7 +38,7 @@ const userStore = useUserStore()
 
 const map = lobbyStore.selectedLobby?.map
 const scale = 1
-const wallHeight = 2
+const wallHeight = 1.5
 const roofHeight = wallHeight + 1
 
 const sceneContainer = ref<HTMLDivElement | null>(null)
@@ -146,27 +146,58 @@ watch(
   scene.add(plane)
 }*/
 
+function createBorderTexture(size = 512, border = 20): THREE.CanvasTexture {
+  const canvas = document.createElement('canvas')
+  canvas.width = size
+  canvas.height = size
+
+  const ctx = canvas.getContext('2d')
+  if (!ctx) {
+    throw new Error('Could not get 2D context')
+  }
+
+  ctx.fillStyle = 'black'
+  ctx.fillRect(0, 0, size, size)
+
+  ctx.fillStyle = 'lime'
+
+  // Oben
+  ctx.fillRect(0, 0, size, border)
+  // Links
+  ctx.fillRect(0, 0, border, size)
+  // Rechts
+  ctx.fillRect(size - border, 0, border, size)
+
+  return new THREE.CanvasTexture(canvas)
+}
+
 // Tiles
 if (map) {
+  const texture = createBorderTexture()
   const geometry = new THREE.BoxGeometry(1 * scale, wallHeight * scale, 1 * scale)
-  const material = new THREE.MeshStandardMaterial({
-    color: 0x00ff00,
-    // emissive: 0x00ff00,
-    emissiveIntensity: 0.1,
-    side: THREE.DoubleSide,
-    metalness: 0.1,
-    roughness: 1,
-  })
+  const materials = [
+    new THREE.MeshBasicMaterial({ map: texture }), // +X
+    new THREE.MeshBasicMaterial({ map: texture }), // -X
+    new THREE.MeshBasicMaterial({ color: 0x000000 }), // +Y = Top, only color
+    new THREE.MeshBasicMaterial({ color: 0x000000 }), // -Y = Bottom, only color
+    new THREE.MeshBasicMaterial({ map: texture }), // +Z
+    new THREE.MeshBasicMaterial({ map: texture }), // -Z
+  ]
+
   for (let y = 0; y < map.tiles.length; y++) {
     for (let x = 0; x < map.tiles[y].length; x++) {
       if (map.tiles[y][x]) {
-        const cube = new THREE.Mesh(geometry, material)
-        cube.position.set(x * scale + scale / 2, 0, y * scale + scale / 2)
+        const cube = new THREE.Mesh(geometry, materials)
+        cube.position.set(
+          x * scale + scale / 2,
+          (wallHeight * scale) / 2 - 0.5 * scale,
+          y * scale + scale / 2,
+        )
 
         scene.add(cube)
       } else {
         const planeGeometry = new THREE.PlaneGeometry(scale, scale)
-        const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x111111 })
+        const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x030303 })
         const plane = new THREE.Mesh(planeGeometry, planeMaterial)
 
         // Plane is on the ground
@@ -181,7 +212,7 @@ if (map) {
 
 // Walls --> When looking into +x direction
 if (map) {
-  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x222222 })
+  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x070707 })
   const planeGeometry = new THREE.PlaneGeometry(map.width * scale, roofHeight * scale)
 
   // --- Top ---
@@ -216,10 +247,10 @@ if (map) {
   scene.add(rightPlane)
 }
 
-// Roof --> Not working correctly
+// Roof
 if (map) {
   const planeGeometry = new THREE.PlaneGeometry(map?.width * scale, map?.height * scale)
-  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x111111 })
+  const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x020202 })
   const plane = new THREE.Mesh(planeGeometry, planeMaterial)
   plane.rotation.x = Math.PI / 2
   plane.position.set(map?.width / 2, roofHeight * scale - 0.5 * scale, map.width / 2)
