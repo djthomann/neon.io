@@ -28,17 +28,38 @@ class GameSession(
     private var lasers = mutableListOf<GameLaser>()
 
     fun processPlayerAttack(attack: GameAttack) {
-        val player = players[attack.playerId]
 
-        if(player != null) {
-            lasers.add(
-                GameLaser(
-                    shotAt = System.currentTimeMillis(),
-                    origin = Vector3(player.x, player.y, player.z),
-                    direction = attack.vector
-                )
-            )
-            println("ADDED LASER")
+        val attackTime = System.currentTimeMillis()
+        val playerShooting = players[attack.playerId] ?: return
+
+        if(playerShooting.hitTime != null) {
+            return
+        }
+
+        // player exists and can shoot
+
+        val laser = GameLaser(
+            shotAt = System.currentTimeMillis(),
+            origin = Vector3(playerShooting.x, playerShooting.y, playerShooting.z),
+            direction = attack.vector
+        )
+
+        lasers.add(laser)
+        // println("ADDED LASER")
+
+        for ((_, player) in players) {
+            if(playerShooting != player) {
+                val dist = laser.hitDistance2D(player)
+
+                if(dist != null) {
+                    println("HIT")
+                    if (player.hitTime == null) {
+                        player.hitTime = attackTime
+                    }
+                } else {
+                    println("NOT HIT")
+                }
+            }
         }
 
     }
@@ -62,14 +83,18 @@ class GameSession(
             println("POSITION NOT IN BOUNDs: $newPos")
             return   
         }
-
         
         if(map.positionInWalls(newPos.x, newPos.z)) {
             println("POSITION NOT IN WALLS: $newPos")
             return
         }
 
-        println("NEW POSITION: $newPos")
+        if(map.bodyInWalls(newPos.x, newPos.z, player.radius)) {
+            println("BODY IN WALLS: $newPos")
+            return
+        }
+
+        // println("NEW POSITION: $newPos")
         player.x = newPos.x
         player.z = newPos.z
 
@@ -114,8 +139,9 @@ class GameSession(
 
         // println("Game $id: TICK!")
         for((_, player) in players) {
+            updateHitState(tickTime, player)
             applyGravity(player)
-            sendPosition(player)
+            sendPlayerInfo(player)
         }
 
         lasers =  lasers.filter { laser ->  tickTime - laser.shotAt < 5000 }.toMutableList()
@@ -123,9 +149,21 @@ class GameSession(
         sendLasers(lasers)
     }
 
+    private fun updateHitState(tickTime: Long, player: GamePlayer) {
+
+        val playerHitTime = player.hitTime ?: return
+
+        // Check if player is okay again
+        if(tickTime - playerHitTime > 5000) {
+            player.hitTime = null
+        } else {
+            println("STILL HIT")
+        }
+    }
+
     private fun sendLasers(lasers: List<GameLaser>) {
 
-        println("Sending laser: $lasers")
+        // println("Sending laser: $lasers")
 
         messagingTemplate.convertAndSend(
             "/topic/game/$id/lasers",
@@ -145,10 +183,10 @@ class GameSession(
         }
     }
 
-    fun sendPosition(player: GamePlayer) {
+    fun sendPlayerInfo(player: GamePlayer) {
         messagingTemplate.convertAndSend(
-            "/topic/game/$id/position",
-            GamePosition(player.id, player.x, player.y, player.z)
+            "/topic/game/$id/player-info",
+            PlayerInfo(player.id, player.x, player.y, player.z, player.hitTime != null)
         )
     }
 
@@ -157,7 +195,7 @@ class GameSession(
         val elapsedTimeSeconds = (System.currentTimeMillis() - startTime) / 1000
         val remainingTime = length - elapsedTimeSeconds
         
-        println("Game $id: Time remaining: $remainingTime")
+        // println("Game $id: Time remaining: $remainingTime")
 
         messagingTemplate.convertAndSend(
             "/topic/game/$id/time",

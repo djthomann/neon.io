@@ -9,6 +9,7 @@ data class GamePlayer(
     var x: Double,
     var y: Double,
     var z: Double,
-
+    var radius: Double = 0.5,
+    var hitTime: Long? = null,
     var vy: Double = 0.0
 )

@@ -19,8 +19,14 @@ data class NeonMap(
     }
     
 
+    // TODO() Rename this function
     fun positionInWalls(x: Double, z: Double): Boolean {
         return tiles[z.toInt()][x.toInt()]
+    }
+
+    // TODO() Implement this function
+    fun bodyInWalls(x: Double, y: Double, z: Double): Boolean {
+        return false
     }
 
     override fun equals(other: Any?): Boolean {

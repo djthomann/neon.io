@@ -85,16 +85,22 @@ watch(
       if (p.id === userStore.id) continue
       // mesh already there?
       if (!playerMeshes.has(p.id)) {
-        const geometry = new THREE.BoxGeometry(0.5 * scale, 1 * scale, 0.5 * scale)
+        const geometry = new THREE.CylinderGeometry(0.5 * scale, 0.5 * scale, scale, 32)
         const material = new THREE.MeshBasicMaterial({ color: 0x0000ff })
         const mesh = new THREE.Mesh(geometry, material)
         mesh.position.set(5, 5, 5)
         scene.add(mesh)
         playerMeshes.set(p.id, mesh)
       } else {
-        // update mesh positions
+        // update mesh
         const mesh = playerMeshes.get(p.id)!
         mesh.position.set(p.x, p.y, p.z)
+        const material = mesh.material as THREE.MeshBasicMaterial
+        if (p.isHit) {
+          material.color.set(0xff0000)
+        } else {
+          material.color.set(0x0000ff)
+        }
       }
     }
   },
