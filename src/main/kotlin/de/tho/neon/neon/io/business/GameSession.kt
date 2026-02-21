@@ -46,7 +46,7 @@ class GameSession(
         val laser = GameLaser(
             shotAt = System.currentTimeMillis(),
             origin = Vector3(playerShooting.x, playerShooting.y, playerShooting.z),
-            direction = attack.vector
+            direction = attack.vector.normalize()
         )
 
         lasers.add(laser)
@@ -77,7 +77,7 @@ class GameSession(
 
         val vec = movement.vector
 
-        val newPos = Vector3(player.x + vec.x * 0.2, player.y + vec.y * 0.2, player.z + vec.z * 0.2)
+        val newPos = Vector3(player.x + vec.x * 0.1, player.y + vec.y * 0.1, player.z + vec.z * 0.1)
 
         if(!(newPos.y >= 0)) {
             println("POSITION UNDERGROUND: $newPos")
@@ -92,6 +92,12 @@ class GameSession(
         if(map.positionInWalls(newPos.x, newPos.z)) {
             println("POSITION NOT IN WALLS: $newPos")
             return
+        }
+
+        for((_, p) in players) {
+            if(p != player && p.positionInBounds(newPos)) {
+                return
+            }
         }
 
         if(map.bodyInWalls(newPos.x, newPos.z, player.radius)) {
@@ -203,6 +209,9 @@ class GameSession(
     }
 
     fun sendPlayerInfo(player: GamePlayer) {
+
+        println("PLAYER INFO: $player")
+
         messagingTemplate.convertAndSend(
             "/topic/game/$id/player-info",
             PlayerInfo(player.id, player.x, player.y, player.z, player.hitTime != null)

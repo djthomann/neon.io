@@ -6,22 +6,25 @@ data class NeonMap(
 
     val name: String,
 
-    val width: Int = 10,
-    val height: Int = 10,
+    val width: Int = 10, // x
+    val height: Int = 10, // z
 
     var tiles: Array<Array<Boolean>> = Array(height) {
         Array(width) { false }
     }
 ) {
 
+    fun getTileAt(x: Int, z: Int): Boolean {
+        return tiles[z][x]
+    }
+
     fun positionInBounds(x: Double, z: Double): Boolean {
         return x >= 0.0 && x <= width && z >= 0.0 && z <= height
     }
-    
 
     // TODO() Rename this function
     fun positionInWalls(x: Double, z: Double): Boolean {
-        return tiles[z.toInt()][x.toInt()]
+        return getTileAt(x.toInt(), z.toInt())
     }
 
     // TODO() Implement this function

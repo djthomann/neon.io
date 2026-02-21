@@ -38,7 +38,8 @@ const userStore = useUserStore()
 
 const map = lobbyStore.selectedLobby?.map
 const scale = 1
-const wallHeight = 1.5
+const playerHeight = 1
+const wallHeight = 1
 const roofHeight = wallHeight + 1
 
 const sceneContainer = ref<HTMLDivElement | null>(null)
@@ -85,7 +86,12 @@ watch(
       if (p.id === userStore.id) continue
       // mesh already there?
       if (!playerMeshes.has(p.id)) {
-        const geometry = new THREE.CylinderGeometry(0.5 * scale, 0.5 * scale, scale, 32)
+        const geometry = new THREE.CylinderGeometry(
+          0.5 * scale,
+          0.5 * scale,
+          playerHeight * scale,
+          32,
+        )
         const material = new THREE.MeshBasicMaterial({ color: 0x0000ff })
         const mesh = new THREE.Mesh(geometry, material)
         mesh.position.set(5, 5, 5)
