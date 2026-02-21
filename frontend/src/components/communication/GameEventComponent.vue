@@ -3,7 +3,7 @@
 <script lang="ts" setup>
 import type { GameEnd } from '@/assets/types/events/gameEnd'
 import type { GameLaser } from '@/assets/types/events/gameLaser'
-import type { PlayerInfo } from '@/assets/types/events/gamePosition'
+import type { PlayerInfo } from '@/assets/types/events/playerInfo'
 import type { GameTime } from '@/assets/types/events/gameTime'
 import type { LobbiesState } from '@/assets/types/events/lobbiesState'
 import { useGameStore } from '@/stores/game'
